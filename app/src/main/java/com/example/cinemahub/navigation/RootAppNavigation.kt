@@ -6,13 +6,13 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.cinemahub.ui.screens.home.HomeScreen
+import com.example.cinemahub.ui.screens.main.MainScreen
 
 @Composable
 fun RootAppNavigation(
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
-    startDestination: String = Routes.Home.route
+    startDestination: String = Routes.Main.route
 ) {
     NavHost(
         modifier = modifier,
@@ -20,8 +20,8 @@ fun RootAppNavigation(
         startDestination = startDestination,
         route = null
     ) {
-        composable(Routes.Home.route) {
-            HomeScreen()
+        composable(Routes.Main.route) {
+            MainScreen()
         }
     }
 }
