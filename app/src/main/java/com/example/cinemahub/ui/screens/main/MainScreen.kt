@@ -51,9 +51,9 @@ fun MainScreen(
     val currentDestination = backStackEntry?.destination
 
     Scaffold(
-        topBar = {
-            HomeScreenTopBar()
-        },
+//        topBar = {
+//            HomeScreenTopBar()
+//        },
         bottomBar = {
             BottomNavigationBar(
                 currentDestination = currentDestination,
@@ -81,24 +81,6 @@ fun MainScreen(
                 .padding(it)
         )
     }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun HomeScreenTopBar(
-    modifier: Modifier = Modifier
-) {
-    TopAppBar(
-        title = {
-            Text(
-                text = stringResource(R.string.app_name),
-                color = MaterialTheme.colorScheme.secondary,
-                fontWeight = FontWeight.Bold,
-                style = MaterialTheme.typography.headlineSmall
-            )
-        },
-        modifier = modifier
-    )
 }
 
 @Composable

@@ -2,6 +2,7 @@ package com.example.cinemahub.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -9,7 +10,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import com.example.cinemahub.ui.screens.favorites.FavoritesScreen
 import com.example.cinemahub.ui.screens.home.HomeScreen
+import com.example.cinemahub.ui.screens.home.HomeViewModel
 import com.example.cinemahub.ui.screens.profile.ProfileScreen
+import com.example.cinemahub.ui.screens.profile.ProfileViewModel
 import com.example.cinemahub.ui.screens.search.SearchScreen
 
 @Composable
@@ -43,7 +46,10 @@ fun NavGraphBuilder.homeGraph(
 ) {
     navigation(startDestination = Routes.Home.route, route = Routes.HomeGraph.route) {
         composable(Routes.Home.route) {
-            HomeScreen()
+            val viewModel: HomeViewModel = hiltViewModel()
+            HomeScreen(
+                viewModel = viewModel
+            )
         }
     }
 }
@@ -73,7 +79,11 @@ fun NavGraphBuilder.profileGraph(
 ) {
     navigation(startDestination = Routes.Profile.route, route = Routes.ProfileGraph.route) {
         composable(Routes.Profile.route) {
-            ProfileScreen()
+            val viewModel: ProfileViewModel = hiltViewModel()
+            ProfileScreen(
+                viewModel = viewModel,
+                onBack = {}
+            )
         }
     }
 }
