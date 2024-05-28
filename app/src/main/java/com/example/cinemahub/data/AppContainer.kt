@@ -1,5 +1,6 @@
 package com.example.cinemahub.data
 
+import com.example.cinemahub.PreferenceManagerSingleton
 import com.example.cinemahub.network.CinemaHubApiService
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
@@ -33,9 +34,14 @@ class DefaultAppContainer : AppContainer {
         retrofit.create(CinemaHubApiService::class.java)
     }
 
+//    private lateinit var preferenceManager: PreferenceManager
+//    private lateinit var token: String
+//    private fun getToken(): String? = preferenceManager.getString("jwt_token", null)
+
     @get:Provides
     override val cinemaHubRepository: CinemaHubRepository by lazy {
         NetworkCinemaHubRepository(
+            PreferenceManagerSingleton.getToken(),
             retrofitService
         )
     }

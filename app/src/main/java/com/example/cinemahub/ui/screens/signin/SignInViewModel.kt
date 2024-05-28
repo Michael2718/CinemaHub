@@ -1,14 +1,12 @@
 package com.example.cinemahub.ui.screens.signin
 
-import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.preference.PreferenceManager
+import com.example.cinemahub.PreferenceManagerSingleton
 import com.example.cinemahub.data.CinemaHubRepository
 import com.example.cinemahub.network.RequestStatus
 import com.example.cinemahub.network.TokenRequestStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -18,8 +16,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SignInViewModel @Inject constructor(
-    private val repository: CinemaHubRepository,
-    @ApplicationContext private val context: Context
+    private val repository: CinemaHubRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SignInUiState())
@@ -55,13 +52,8 @@ class SignInViewModel @Inject constructor(
                 )
             }
 
-            saveTokenToPreferences(getToken())
+            PreferenceManagerSingleton.saveToken(getToken())
         }
-    }
-
-    private fun saveTokenToPreferences(token: String?) {
-        val prefs = PreferenceManager.getDefaultSharedPreferences(context)
-        prefs.edit().putString("jwt_token", token).apply()
     }
 
     private fun getToken(): String? {

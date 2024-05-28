@@ -15,7 +15,7 @@ import com.example.cinemahub.ui.screens.signin.SignInViewModel
 fun RootAppNavigation(
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
-    startDestination: String = Routes.SignIn.route// Routes.Main.route
+    startDestination: String = Routes.Main.route
 ) {
     NavHost(
         modifier = modifier,
