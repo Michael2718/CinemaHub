@@ -73,6 +73,7 @@ dependencies {
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlinx.datetime)
+    implementation(libs.androidx.preference.ktx)
     kapt(libs.google.dagger.hilt.compiler)
 
     testImplementation(libs.junit)

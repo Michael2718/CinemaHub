@@ -61,24 +61,25 @@ fun ProfileScreen(
                         )
                     }
                 }
-//                scrollBehavior = scrollBehavior
             )
         },
         modifier = modifier
     ) {
-        when (uiState.userRequestStatus) {
-            is RequestStatus.Error -> Text(
-                (uiState.userRequestStatus as RequestStatus.Error<User>).exception.toString(),
-                modifier = Modifier.padding(it)
-            )
-
-            is RequestStatus.Loading -> Text("Profile is loading", modifier = Modifier.padding(it))
-            is RequestStatus.Success -> {
-                ProfileContent(
-                    (uiState.userRequestStatus as RequestStatus.Success<User>).data,
-                    modifier = Modifier
-                        .padding(it)
+        Column {
+            when (uiState.userRequestStatus) {
+                is RequestStatus.Error -> Text(
+                    (uiState.userRequestStatus as RequestStatus.Error<User>).exception.toString(),
+                    modifier = Modifier.padding(it)
                 )
+
+                is RequestStatus.Loading -> Text("Profile is loading", modifier = Modifier.padding(it))
+                is RequestStatus.Success -> {
+                    ProfileContent(
+                        (uiState.userRequestStatus as RequestStatus.Success<User>).data,
+                        modifier = Modifier
+                            .padding(it)
+                    )
+                }
             }
         }
     }

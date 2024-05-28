@@ -1,6 +1,7 @@
 package com.example.cinemahub.network
 
 import com.example.cinemahub.model.api.movie.Movie
+import com.example.cinemahub.model.api.user.Token
 import com.example.cinemahub.model.api.user.User
 import java.lang.Exception
 
@@ -16,3 +17,4 @@ sealed interface RequestStatus<T> {
 
 typealias MoviesRequestStatus = RequestStatus<List<Movie>>
 typealias UserRequestStatus = RequestStatus<User>
+typealias TokenRequestStatus = RequestStatus<Token>
