@@ -11,7 +11,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.cinemahub.PreferenceManagerSingleton
 import com.example.cinemahub.ui.screens.main.MainScreen
-import com.example.cinemahub.ui.screens.main.MainScreenViewModel
+import com.example.cinemahub.ui.screens.main.MainViewModel
 import com.example.cinemahub.ui.screens.signin.SignInScreen
 import com.example.cinemahub.ui.screens.signin.SignInViewModel
 import com.example.cinemahub.ui.screens.signin.SignInWelcomeScreen
@@ -72,7 +72,7 @@ fun RootAppNavigation(
         }
 
         composable(Routes.Main.route) {
-            val viewModel: MainScreenViewModel = hiltViewModel()
+            val viewModel: MainViewModel = hiltViewModel()
             MainScreen(viewModel = viewModel)
         }
     }

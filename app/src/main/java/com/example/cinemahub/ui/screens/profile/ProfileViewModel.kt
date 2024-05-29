@@ -20,23 +20,23 @@ class ProfileViewModel @Inject constructor(
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(
         ProfileScreenUiState(
-            username = PreferenceManagerSingleton.getUsername()
+            userId = PreferenceManagerSingleton.getUserId()
         )
     )
 
     val uiState: StateFlow<ProfileScreenUiState> = _uiState
 
     init {
-        fetchUser(_uiState.value.username ?: "")
+        fetchUser(_uiState.value.userId)
     }
 
-    fun fetchUser(username: String) {
+    fun fetchUser(userId: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             _uiState.update {
                 it.copy(
                     userRequestStatus = try {
                         RequestStatus.Success(
-                            repository.getUserByUsername(username)
+                            repository.getUserById(userId)
                         )
                     } catch (e: Exception) {
                         RequestStatus.Error(e)
@@ -59,5 +59,6 @@ class ProfileViewModel @Inject constructor(
 
 data class ProfileScreenUiState(
     val userRequestStatus: UserRequestStatus = RequestStatus.Loading(),
-    val username: String?
+//    val username: String?
+    val userId: Int
 )

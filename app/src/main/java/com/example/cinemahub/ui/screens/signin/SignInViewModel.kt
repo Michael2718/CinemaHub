@@ -47,12 +47,16 @@ class SignInViewModel @Inject constructor(
             }
 
             _uiState.update {
-                it.copy(tokenRequestStatus = status)
+                it.copy(
+                    tokenRequestStatus = status,
+                    userId = repository.getUserByUsername(_uiState.value.username).userId
+                )
             }
 
             if (status is RequestStatus.Success) {
                 PreferenceManagerSingleton.saveToken(getToken())
-                PreferenceManagerSingleton.saveUsername(getUsername())
+                PreferenceManagerSingleton.saveUsername(_uiState.value.username)
+                PreferenceManagerSingleton.saveUserId(_uiState.value.userId)
                 true
             } else {
                 false
@@ -60,17 +64,12 @@ class SignInViewModel @Inject constructor(
         }
     }
 
-    private fun getToken(): String? {
-        return when (val requestStatus = _uiState.value.tokenRequestStatus) {
+    private fun getToken(): String? =
+        when (val requestStatus = _uiState.value.tokenRequestStatus) {
             is RequestStatus.Error -> null
             is RequestStatus.Loading -> null
             is RequestStatus.Success -> requestStatus.data.token
         }
-    }
-
-    private fun getUsername(): String {
-        return _uiState.value.username
-    }
 
     fun isLoggedIn(): Boolean {
         val token = PreferenceManagerSingleton.getToken()
@@ -81,5 +80,6 @@ class SignInViewModel @Inject constructor(
 data class SignInUiState(
     val username: String = "",
     val password: String = "",
+    val userId: Int = -1,
     val tokenRequestStatus: TokenRequestStatus = RequestStatus.Loading()
 )

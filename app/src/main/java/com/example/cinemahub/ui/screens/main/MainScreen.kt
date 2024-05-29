@@ -29,7 +29,7 @@ import com.example.cinemahub.navigation.Routes
 @Composable
 fun MainScreen(
     modifier: Modifier = Modifier,
-    viewModel: MainScreenViewModel,
+    viewModel: MainViewModel,
     navController: NavHostController = rememberNavController()
 ) {
     val navGraphs: List<Routes> = listOf(

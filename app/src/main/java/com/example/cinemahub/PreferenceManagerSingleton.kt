@@ -29,4 +29,12 @@ object PreferenceManagerSingleton {
     fun getUsername(): String? {
         return preferences.getString("username", null)
     }
+
+    fun saveUserId(userId: Int) {
+        preferences.edit().putInt("user_id", userId).apply()
+    }
+
+    fun getUserId(): Int {
+        return preferences.getInt("user_id", -1)
+    }
 }
