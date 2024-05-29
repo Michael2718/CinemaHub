@@ -51,7 +51,6 @@ fun SignInScreen(
     modifier: Modifier = Modifier
 ) {
     val uiState by viewModel.uiState.collectAsState()
-//    val prefs = PreferenceManager.getDefaultSharedPreferences(LocalContext.current)
 
     Scaffold(
         topBar = {

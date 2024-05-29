@@ -210,8 +210,9 @@ data class UserInfoField(
 @Preview
 fun ProfileScreenPreview() {
     val viewModel: ProfileViewModel = hiltViewModel()
-    ProfileScreen(
-        viewModel = viewModel,
-        onBack = {}
-    )
+//    ProfileScreen(
+//        viewModel = viewModel,
+//        username = "",
+//        onBack = {}
+//    )
 }

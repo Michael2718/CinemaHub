@@ -7,7 +7,9 @@ import com.example.cinemahub.network.CinemaHubApiService
 
 interface CinemaHubRepository {
     suspend fun getAllMovies(): List<Movie>
+
     suspend fun getUserById(userId: Int): User
+    suspend fun getUserByUsername(username: String): User
     suspend fun login(username: String, password: String): Token
 }
 
@@ -23,6 +25,10 @@ class NetworkCinemaHubRepository(
 
     override suspend fun getUserById(userId: Int): User {
         return cinemaHubApiService.getUserById(userId = userId, authHeader = "Bearer $token")
+    }
+
+    override suspend fun getUserByUsername(username: String): User {
+        return cinemaHubApiService.getUserByUsername(username = username, authHeader = "Bearer $token")
     }
 
     override suspend fun login(username: String, password: String): Token {

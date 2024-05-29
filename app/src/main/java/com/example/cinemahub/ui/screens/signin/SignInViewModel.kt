@@ -1,7 +1,6 @@
 package com.example.cinemahub.ui.screens.signin
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.example.cinemahub.PreferenceManagerSingleton
 import com.example.cinemahub.data.CinemaHubRepository
 import com.example.cinemahub.network.RequestStatus
@@ -11,7 +10,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -38,21 +37,26 @@ class SignInViewModel @Inject constructor(
         }
     }
 
-    fun login() {
-        viewModelScope.launch(Dispatchers.IO) {
-            _uiState.update {
-                it.copy(
-                    tokenRequestStatus = try {
-                        RequestStatus.Success(
-                            repository.login(it.username, it.password)
-                        )
-                    } catch (e: Exception) {
-                        RequestStatus.Error(e)
-                    }
-                )
+    suspend fun login(): Boolean {
+        return withContext(Dispatchers.IO) {
+            val status = try {
+                val token = repository.login(_uiState.value.username, _uiState.value.password)
+                RequestStatus.Success(token)
+            } catch (e: Exception) {
+                RequestStatus.Error(e)
             }
 
-            PreferenceManagerSingleton.saveToken(getToken())
+            _uiState.update {
+                it.copy(tokenRequestStatus = status)
+            }
+
+            if (status is RequestStatus.Success) {
+                PreferenceManagerSingleton.saveToken(getToken())
+                PreferenceManagerSingleton.saveUsername(getUsername())
+                true
+            } else {
+                false
+            }
         }
     }
 
@@ -62,6 +66,15 @@ class SignInViewModel @Inject constructor(
             is RequestStatus.Loading -> null
             is RequestStatus.Success -> requestStatus.data.token
         }
+    }
+
+    private fun getUsername(): String {
+        return _uiState.value.username
+    }
+
+    fun isLoggedIn(): Boolean {
+        val token = PreferenceManagerSingleton.getToken()
+        return !token.isNullOrEmpty()
     }
 }
 

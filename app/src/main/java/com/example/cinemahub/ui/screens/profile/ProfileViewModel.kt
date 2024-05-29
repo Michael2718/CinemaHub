@@ -2,6 +2,7 @@ package com.example.cinemahub.ui.screens.profile
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.cinemahub.PreferenceManagerSingleton
 import com.example.cinemahub.data.CinemaHubRepository
 import com.example.cinemahub.network.RequestStatus
 import com.example.cinemahub.network.UserRequestStatus
@@ -18,23 +19,24 @@ class ProfileViewModel @Inject constructor(
     private val repository: CinemaHubRepository
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(
-        ProfileScreenUiState()
+        ProfileScreenUiState(
+            username = PreferenceManagerSingleton.getUsername()
+        )
     )
 
     val uiState: StateFlow<ProfileScreenUiState> = _uiState
 
     init {
-//        fetchUser(userId: Int)
-        fetchUser(2)
+        fetchUser(_uiState.value.username ?: "")
     }
 
-    fun fetchUser(userId: Int) {
+    fun fetchUser(username: String) {
         viewModelScope.launch(Dispatchers.IO) {
             _uiState.update {
                 it.copy(
                     userRequestStatus = try {
                         RequestStatus.Success(
-                            repository.getUserById(userId)
+                            repository.getUserByUsername(username)
                         )
                     } catch (e: Exception) {
                         RequestStatus.Error(e)
@@ -43,8 +45,19 @@ class ProfileViewModel @Inject constructor(
             }
         }
     }
+
+//    fun updateUser(username: String) {
+//        viewModelScope.launch(Dispatchers.IO) {
+//            _uiState.update {
+//                it.copy(
+//                    username = username
+//                )
+//            }
+//        }
+//    }
 }
 
 data class ProfileScreenUiState(
-    val userRequestStatus: UserRequestStatus = RequestStatus.Loading()
+    val userRequestStatus: UserRequestStatus = RequestStatus.Loading(),
+    val username: String?
 )

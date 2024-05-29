@@ -75,9 +75,12 @@ fun NavGraphBuilder.favoritesGraph(
 }
 
 fun NavGraphBuilder.profileGraph(
-    navController: NavHostController
+    navController: NavHostController,
 ) {
-    navigation(startDestination = Routes.Profile.route, route = Routes.ProfileGraph.route) {
+    navigation(
+        startDestination = Routes.Profile.route, route = Routes.ProfileGraph.route,
+
+        ) {
         composable(Routes.Profile.route) {
             val viewModel: ProfileViewModel = hiltViewModel()
             ProfileScreen(

@@ -8,6 +8,7 @@ import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface CinemaHubApiService {
     // Movie
@@ -16,6 +17,9 @@ interface CinemaHubApiService {
 
     @GET("user/{userId}")
     suspend fun getUserById(@Path("userId") userId: Int, @Header("Authorization") authHeader: String) : User
+
+    @GET("user")
+    suspend fun getUserByUsername(@Query("username") username: String, @Header("Authorization") authHeader: String) : User
 
     @POST("login")
     suspend fun login(@Body credentials: Map<String, String>) : Token
