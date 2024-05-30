@@ -38,42 +38,56 @@ class SignInViewModel @Inject constructor(
     }
 
     suspend fun login(): Boolean {
-        return withContext(Dispatchers.IO) {
-            val status = try {
-                val token = repository.login(_uiState.value.username, _uiState.value.password)
+        val username = _uiState.value.username
+        val password = _uiState.value.password
+
+        val status = withContext(Dispatchers.IO) {
+            try {
+                val token = repository.login(username, password)
                 RequestStatus.Success(token)
             } catch (e: Exception) {
                 RequestStatus.Error(e)
             }
+        }
+
+        _uiState.update {
+            it.copy(
+                tokenRequestStatus = status
+            )
+        }
+
+        if (status is RequestStatus.Success) {
+            val token = status.data.token
+            PreferenceManagerSingleton.saveToken(token)
+            repository.updateToken(token)
+            PreferenceManagerSingleton.saveUsername(username)
+
+            val userId = repository.getUserByUsername(username).userId
+            PreferenceManagerSingleton.saveUserId(userId)
 
             _uiState.update {
                 it.copy(
-                    tokenRequestStatus = status,
-                    userId = repository.getUserByUsername(_uiState.value.username).userId
+                    userId = userId
                 )
             }
 
-            if (status is RequestStatus.Success) {
-                PreferenceManagerSingleton.saveToken(getToken())
-                PreferenceManagerSingleton.saveUsername(_uiState.value.username)
-                PreferenceManagerSingleton.saveUserId(_uiState.value.userId)
-                true
-            } else {
-                false
-            }
+            return true
         }
+
+        return false
     }
 
-    private fun getToken(): String? =
-        when (val requestStatus = _uiState.value.tokenRequestStatus) {
-            is RequestStatus.Error -> null
-            is RequestStatus.Loading -> null
-            is RequestStatus.Success -> requestStatus.data.token
-        }
+
+//    private fun getToken(): String? =
+//        when (val requestStatus = _uiState.value.tokenRequestStatus) {
+//            is RequestStatus.Error -> null
+//            is RequestStatus.Loading -> null
+//            is RequestStatus.Success -> requestStatus.data.token
+//        }
 
     fun isLoggedIn(): Boolean {
         val token = PreferenceManagerSingleton.getToken()
-        return !token.isNullOrEmpty()
+        return token.isNotEmpty()
     }
 }
 

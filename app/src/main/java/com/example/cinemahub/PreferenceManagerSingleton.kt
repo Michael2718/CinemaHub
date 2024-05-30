@@ -18,16 +18,16 @@ object PreferenceManagerSingleton {
         preferences.edit().putString("jwt_token", token).apply()
     }
 
-    fun getToken(): String? {
-        return preferences.getString("jwt_token", null)
+    fun getToken(): String {
+        return preferences.getString("jwt_token", null) ?: ""
     }
 
     fun saveUsername(username: String?) {
         preferences.edit().putString("username", username).apply()
     }
 
-    fun getUsername(): String? {
-        return preferences.getString("username", null)
+    fun getUsername(): String {
+        return preferences.getString("username", null) ?: ""
     }
 
     fun saveUserId(userId: Int) {
@@ -35,6 +35,6 @@ object PreferenceManagerSingleton {
     }
 
     fun getUserId(): Int {
-        return preferences.getInt("user_id", -1)
+        return preferences.getInt("user_id", -100)
     }
 }

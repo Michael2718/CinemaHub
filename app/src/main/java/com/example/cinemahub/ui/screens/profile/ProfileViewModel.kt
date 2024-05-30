@@ -19,14 +19,13 @@ class ProfileViewModel @Inject constructor(
     private val repository: CinemaHubRepository
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(
-        ProfileScreenUiState(
-            userId = PreferenceManagerSingleton.getUserId()
-        )
+        ProfileScreenUiState()
     )
 
     val uiState: StateFlow<ProfileScreenUiState> = _uiState
 
     init {
+        updateUserid(PreferenceManagerSingleton.getUserId())
         fetchUser(_uiState.value.userId)
     }
 
@@ -46,19 +45,18 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
-//    fun updateUser(username: String) {
-//        viewModelScope.launch(Dispatchers.IO) {
-//            _uiState.update {
-//                it.copy(
-//                    username = username
-//                )
-//            }
-//        }
-//    }
+    private fun updateUserid(userId: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            _uiState.update {
+                it.copy(
+                    userId = userId
+                )
+            }
+        }
+    }
 }
 
 data class ProfileScreenUiState(
     val userRequestStatus: UserRequestStatus = RequestStatus.Loading(),
-//    val username: String?
-    val userId: Int
+    val userId: Int = PreferenceManagerSingleton.getUserId()
 )

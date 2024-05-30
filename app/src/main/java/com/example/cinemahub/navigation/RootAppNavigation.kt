@@ -36,7 +36,7 @@ fun RootAppNavigation(
 
             if (viewModel.isLoggedIn()) {
                 SignInWelcomeScreen(
-                    PreferenceManagerSingleton.getUsername()!!
+                    PreferenceManagerSingleton.getUsername()
                 )
 
                 LaunchedEffect(Unit) {
