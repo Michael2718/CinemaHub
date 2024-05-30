@@ -37,4 +37,10 @@ object PreferenceManagerSingleton {
     fun getUserId(): Int {
         return preferences.getInt("user_id", -100)
     }
+
+    fun logOut() {
+        preferences.edit().remove("jwt_token").apply()
+        preferences.edit().remove("username").apply()
+        preferences.edit().remove("user_id").apply()
+    }
 }

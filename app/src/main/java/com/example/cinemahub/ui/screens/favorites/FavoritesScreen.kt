@@ -107,8 +107,7 @@ fun FavoritesScreenContent(
         }
 
         is RequestStatus.Success -> {
-            val favorites =
-                uiState.favoritesRequestStatus.data
+            val favorites = uiState.favoritesRequestStatus.data
             LazyColumn(
 //                verticalArrangement = Arrangement.SpaceEvenly,
                 modifier = modifier

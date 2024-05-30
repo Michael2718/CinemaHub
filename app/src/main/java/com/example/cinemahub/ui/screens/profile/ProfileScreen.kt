@@ -13,7 +13,7 @@ import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -35,17 +35,16 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.cinemahub.R
-import com.example.cinemahub.model.api.user.User
 import com.example.cinemahub.network.RequestStatus
+import com.example.cinemahub.ui.components.LoadingScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
-    onBack: () -> Unit,
-    modifier: Modifier = Modifier,
-    viewModel: ProfileViewModel
+    viewModel: ProfileViewModel,
+    onLogOut: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -53,10 +52,10 @@ fun ProfileScreen(
         topBar = {
             TopAppBar(
                 title = { Text("Profile") },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
+                actions = {
+                    IconButton(onClick = onLogOut) {
                         Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            imageVector = Icons.AutoMirrored.Filled.ExitToApp,
                             contentDescription = stringResource(R.string.back)
                         )
                     }
@@ -65,83 +64,96 @@ fun ProfileScreen(
         },
         modifier = modifier
     ) {
-        Column {
-            when (uiState.userRequestStatus) {
-                is RequestStatus.Error -> Text(
-                    (uiState.userRequestStatus as RequestStatus.Error<User>).exception.toString(),
-                    modifier = Modifier.padding(it)
+        ProfileScreenContent(
+            uiState = uiState,
+            modifier = Modifier
+                .padding(it)
+                .padding(
+                    start = 16.dp,
+                    top = 0.dp,
+                    end = 16.dp,
+                    bottom = 0.dp
                 )
-
-                is RequestStatus.Loading -> Text("Profile is loading", modifier = Modifier.padding(it))
-                is RequestStatus.Success -> {
-                    ProfileContent(
-                        (uiState.userRequestStatus as RequestStatus.Success<User>).data,
-                        modifier = Modifier
-                            .padding(it)
-                    )
-                }
-            }
-        }
+        )
     }
 }
 
 @Composable
-fun ProfileContent(
-    user: User,
+fun ProfileScreenContent(
+    uiState: ProfileScreenUiState,
     modifier: Modifier = Modifier
 ) {
-    Column(
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(8.dp)
-    ) {
-        Column(
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Box(
-                modifier = Modifier
-                    .requiredSize(size = 64.dp)
-                    .clip(shape = CircleShape)
-                    .background(color = Color(0xfff6f6f6))
-            ) {
-                Image(
-                    imageVector = Icons.Filled.AccountCircle,
-                    contentDescription = "Rectangle 1",
-                    modifier = Modifier
+    Column {
+        when (uiState.userRequestStatus) {
+            is RequestStatus.Error -> Text(
+                uiState.userRequestStatus.exception.toString(),
+                modifier = modifier
+            )
+
+            is RequestStatus.Loading -> {
+                LoadingScreen(
+                    modifier = modifier
                         .fillMaxSize()
                 )
             }
-            Text(
-                text = "Edit profile image",
-                color = Color(0xff0d99ff),
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier
-            )
-        }
 
-        val userInfoItems = remember {
-            listOf(
-                UserInfoField("First name", user.firstName, true),
-                UserInfoField("Last name", user.lastName, true),
-                UserInfoField("Username", user.username, true),
-                UserInfoField("Email", user.email, true),
-                UserInfoField("Phone number", user.phoneNumber, false),
-                UserInfoField("Birth date", user.birthDate.toString(), false)
-            )
-        }
+            is RequestStatus.Success -> {
+                val user = uiState.userRequestStatus.data
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = modifier
+                        .fillMaxWidth()
+                        .padding(8.dp)
+                ) {
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .requiredSize(size = 64.dp)
+                                .clip(shape = CircleShape)
+                                .background(color = Color(0xfff6f6f6))
+                        ) {
+                            Image(
+                                imageVector = Icons.Filled.AccountCircle,
+                                contentDescription = "Rectangle 1",
+                                modifier = Modifier
+                                    .fillMaxSize()
+                            )
+                        }
+                        Text(
+                            text = "Edit profile image",
+                            color = Color(0xff0d99ff),
+                            style = MaterialTheme.typography.bodyMedium,
+                            modifier = Modifier
+                        )
+                    }
 
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            userInfoItems.forEach { (field, value, isEditable) ->
-                UserInfoItem(
-                    fieldName = field,
-                    value = value,
-                    isEditable = isEditable
-                )
+                    val userInfoItems = remember {
+                        listOf(
+                            UserInfoField("First name", user.firstName, true),
+                            UserInfoField("Last name", user.lastName, true),
+                            UserInfoField("Username", user.username, true),
+                            UserInfoField("Email", user.email, true),
+                            UserInfoField("Phone number", user.phoneNumber, false),
+                            UserInfoField("Birth date", user.birthDate.toString(), false)
+                        )
+                    }
+
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        userInfoItems.forEach { (field, value, isEditable) ->
+                            UserInfoItem(
+                                fieldName = field,
+                                value = value,
+                                isEditable = isEditable
+                            )
+                        }
+                    }
+                }
             }
         }
     }
@@ -158,7 +170,6 @@ fun UserInfoItem(
         horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.Start),
         modifier = modifier
             .padding(
-                horizontal = 16.dp,
                 vertical = 14.dp
             )
     ) {
@@ -209,7 +220,7 @@ data class UserInfoField(
 @Composable
 @Preview
 fun ProfileScreenPreview() {
-    val viewModel: ProfileViewModel = hiltViewModel()
+//    val viewModel: ProfileViewModel = hiltViewModel()
 //    ProfileScreen(
 //        viewModel = viewModel,
 //        username = "",

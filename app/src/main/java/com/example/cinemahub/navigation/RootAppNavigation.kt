@@ -28,7 +28,7 @@ fun RootAppNavigation(
         modifier = modifier,
         navController = navController,
         startDestination = startDestination,
-        route = null
+        route = Routes.Root.route
     ) {
         composable(Routes.SignIn.route) {
             val viewModel: SignInViewModel = hiltViewModel()
@@ -41,9 +41,7 @@ fun RootAppNavigation(
 
                 LaunchedEffect(Unit) {
                     delay(500)
-                    navController.navigate(Routes.Main.route) {
-                        popUpTo(0)
-                    }
+                    navController.navigate(Routes.Main.route)
                 }
             } else {
                 SignInScreen(
@@ -61,9 +59,7 @@ fun RootAppNavigation(
                         coroutineScope.launch {
                             val loginSuccessful = viewModel.login()
                             if (loginSuccessful) {
-                                navController.navigate(Routes.Main.route) {
-                                    popUpTo(0)
-                                }
+                                navController.navigate(Routes.Main.route)
                             }
                         }
                     }
@@ -73,7 +69,15 @@ fun RootAppNavigation(
 
         composable(Routes.Main.route) {
             val viewModel: MainViewModel = hiltViewModel()
-            MainScreen(viewModel = viewModel)
+            MainScreen(
+                viewModel = viewModel,
+                onLogOut = {
+                    PreferenceManagerSingleton.logOut()
+                    navController.navigate(Routes.SignIn.route) {
+                        popUpTo(0)
+                    }
+                }
+            )
         }
     }
 }

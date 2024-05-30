@@ -17,8 +17,9 @@ import com.example.cinemahub.ui.screens.search.SearchScreen
 
 @Composable
 fun MainAppNavigation(
-    modifier: Modifier = Modifier,
     navController: NavHostController,
+    onLogOut: () -> Unit,
+    modifier: Modifier = Modifier,
     startDestination: String = Routes.HomeGraph.route
 ) {
     NavHost(
@@ -26,17 +27,12 @@ fun MainAppNavigation(
         navController = navController,
         startDestination = startDestination
     ) {
-        homeGraph(
-            navController = navController
-        )
-        searchGraph(
-            navController = navController
-        )
-        favoritesGraph(
-            navController = navController
-        )
+        homeGraph(navController = navController)
+        searchGraph(navController = navController)
+        favoritesGraph(navController = navController)
         profileGraph(
-            navController = navController
+            navController = navController,
+            onLogOut = onLogOut
         )
     }
 }
@@ -76,16 +72,17 @@ fun NavGraphBuilder.favoritesGraph(
 
 fun NavGraphBuilder.profileGraph(
     navController: NavHostController,
+    onLogOut: () -> Unit
 ) {
-    navigation(
-        startDestination = Routes.Profile.route, route = Routes.ProfileGraph.route,
-
-        ) {
+    navigation(startDestination = Routes.Profile.route, route = Routes.ProfileGraph.route) {
         composable(Routes.Profile.route) {
             val viewModel: ProfileViewModel = hiltViewModel()
             ProfileScreen(
                 viewModel = viewModel,
-                onBack = {}
+//                onLogOut = {
+//                    viewModel.logOut().also(onLogOut)
+//                }
+                onLogOut = onLogOut
             )
         }
     }

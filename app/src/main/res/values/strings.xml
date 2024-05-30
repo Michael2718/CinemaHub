@@ -1,8 +1,4 @@
 <resources>
     <string name="app_name">CinemaHub</string>
-    <string name="home">home</string>
-    <string name="search">search</string>
-    <string name="favorite">favorite</string>
-    <string name="profile">profile</string>
     <string name="back">Back</string>
 </resources>

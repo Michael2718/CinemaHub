@@ -3,6 +3,7 @@ package com.example.cinemahub.navigation
 sealed class Routes(val route: String) {
     data object Splash : Routes("splash")
     data object Welcome : Routes("welcome")
+    data object Root : Routes("root")
 
     data object SignIn : Routes("sign_in")
     data object SignUp : Routes("sign_up")

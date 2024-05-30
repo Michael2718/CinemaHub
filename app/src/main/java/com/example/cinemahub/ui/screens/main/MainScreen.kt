@@ -28,8 +28,9 @@ import com.example.cinemahub.navigation.Routes
 
 @Composable
 fun MainScreen(
-    modifier: Modifier = Modifier,
     viewModel: MainViewModel,
+    onLogOut: () -> Unit,
+    modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController()
 ) {
     val navGraphs: List<Routes> = listOf(
@@ -66,6 +67,7 @@ fun MainScreen(
     ) {
         MainAppNavigation(
             navController = navController,
+            onLogOut = onLogOut,
             modifier = modifier
                 .fillMaxSize()
                 .padding(it)
