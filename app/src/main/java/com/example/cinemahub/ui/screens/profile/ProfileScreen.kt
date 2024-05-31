@@ -11,7 +11,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.requiredWidth
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
@@ -24,7 +26,11 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
+import androidx.compose.material3.pulltorefresh.PullToRefreshState
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -32,12 +38,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.cinemahub.network.RequestStatus
 import com.example.cinemahub.ui.components.ErrorScreen
 import com.example.cinemahub.ui.components.LoadingScreen
+import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -47,6 +55,7 @@ fun ProfileScreen(
     modifier: Modifier = Modifier
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val pullRefreshState = rememberPullToRefreshState()
 
     Scaffold(
         topBar = {
@@ -56,13 +65,13 @@ fun ProfileScreen(
                     IconButton(onClick = onLogOut) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ExitToApp,
-                            contentDescription = "LogOut"
+                            contentDescription = "LogOut",
                         )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     titleContentColor = MaterialTheme.colorScheme.primary,
-                    actionIconContentColor = MaterialTheme.colorScheme.primary
+                    actionIconContentColor = MaterialTheme.colorScheme.error
                 ),
             )
         },
@@ -70,7 +79,8 @@ fun ProfileScreen(
     ) {
         ProfileScreenContent(
             uiState = uiState,
-            retryAction = {
+            pullRefreshState = pullRefreshState,
+            onRefresh = {
                 viewModel.fetchUser()
             },
             modifier = Modifier
@@ -85,88 +95,112 @@ fun ProfileScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreenContent(
     uiState: ProfileScreenUiState,
-    retryAction: () -> Unit,
+    pullRefreshState: PullToRefreshState,
+    onRefresh: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column {
-        when (uiState.userRequestStatus) {
-            is RequestStatus.Error -> {
-                ErrorScreen(
-                    retryAction = retryAction,
-                    modifier = modifier
-                        .fillMaxSize()
-                )
-            }
+    if (pullRefreshState.isRefreshing) {
+        LaunchedEffect(Unit) {
+            delay(1500)
+            onRefresh()
+            pullRefreshState.endRefresh()
+        }
+    }
 
-            is RequestStatus.Loading -> {
-                LoadingScreen(
-                    modifier = modifier
-                        .fillMaxSize()
-                )
-            }
+    Box(
+        modifier = modifier
+            .nestedScroll(pullRefreshState.nestedScrollConnection)
+    ) {
+        Column(
+            modifier = Modifier
+                .verticalScroll(rememberScrollState())
+        ) {
+            when (uiState.userRequestStatus) {
+                is RequestStatus.Error -> {
+                    ErrorScreen(
+                        onRefresh = { pullRefreshState.startRefresh() },
+                        modifier = Modifier
+                            .fillMaxSize()
+                    )
+                }
 
-            is RequestStatus.Success -> {
-                val user = uiState.userRequestStatus.data
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = modifier
-                        .fillMaxWidth()
-                        .padding(8.dp)
-                ) {
+                is RequestStatus.Loading -> {
+                    LoadingScreen(
+                        modifier = Modifier
+                            .fillMaxSize()
+                    )
+                }
+
+                is RequestStatus.Success -> {
+                    val user = uiState.userRequestStatus.data
                     Column(
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp)
                     ) {
-                        Box(
-                            modifier = Modifier
-                                .requiredSize(size = 64.dp)
-                                .clip(shape = CircleShape)
-                                .background(color = Color(0xfff6f6f6))
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
                         ) {
-                            Image(
-                                imageVector = Icons.Filled.AccountCircle,
-                                contentDescription = "Rectangle 1",
+                            Box(
                                 modifier = Modifier
-                                    .fillMaxSize()
+                                    .requiredSize(size = 64.dp)
+                                    .clip(shape = CircleShape)
+                                    .background(color = Color(0xfff6f6f6))
+                            ) {
+                                Image(
+                                    imageVector = Icons.Filled.AccountCircle,
+                                    contentDescription = "Rectangle 1",
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                )
+                            }
+                            Text(
+                                text = "Edit profile image",
+                                color = Color(0xff0d99ff),
+                                style = MaterialTheme.typography.bodyMedium,
+                                modifier = Modifier
                             )
                         }
-                        Text(
-                            text = "Edit profile image",
-                            color = Color(0xff0d99ff),
-                            style = MaterialTheme.typography.bodyMedium,
-                            modifier = Modifier
-                        )
-                    }
 
-                    val userInfoItems = remember {
-                        listOf(
-                            UserInfoField("First name", user.firstName, true),
-                            UserInfoField("Last name", user.lastName, true),
-                            UserInfoField("Username", user.username, true),
-                            UserInfoField("Email", user.email, true),
-                            UserInfoField("Phone number", user.phoneNumber, false),
-                            UserInfoField("Birth date", user.birthDate.toString(), false)
-                        )
-                    }
-
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        userInfoItems.forEach { (field, value, isEditable) ->
-                            UserInfoItem(
-                                fieldName = field,
-                                value = value,
-                                isEditable = isEditable
+                        val userInfoItems = remember {
+                            listOf(
+                                UserInfoField("First name", user.firstName, true),
+                                UserInfoField("Last name", user.lastName, true),
+                                UserInfoField("Username", user.username, true),
+                                UserInfoField("Email", user.email, true),
+                                UserInfoField("Phone number", user.phoneNumber, false),
+                                UserInfoField("Birth date", user.birthDate.toString(), false)
                             )
+                        }
+
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            userInfoItems.forEach { (field, value, isEditable) ->
+                                UserInfoItem(
+                                    fieldName = field,
+                                    value = value,
+                                    isEditable = isEditable
+                                )
+                            }
                         }
                     }
                 }
             }
         }
+
+        PullToRefreshContainer(
+            modifier = Modifier
+                .align(Alignment.TopCenter),
+            state = pullRefreshState
+        )
     }
 }
 

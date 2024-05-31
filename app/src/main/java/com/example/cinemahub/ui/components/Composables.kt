@@ -11,7 +11,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.cinemahub.R
 
@@ -26,7 +25,7 @@ fun LoadingScreen(modifier: Modifier = Modifier) {
 
 @Composable
 fun ErrorScreen(
-    retryAction: () -> Unit,
+    onRefresh: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -42,7 +41,7 @@ fun ErrorScreen(
             text = "Loading failed",
             modifier = Modifier.padding(16.dp)
         )
-        Button(onClick = retryAction) {
+        Button(onClick = onRefresh) {
             Text(text = "Retry")
         }
     }

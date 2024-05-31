@@ -3,7 +3,9 @@ package com.example.cinemahub.ui.screens.favorites
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
@@ -29,12 +31,17 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
+import androidx.compose.material3.pulltorefresh.PullToRefreshState
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -51,6 +58,7 @@ import com.example.cinemahub.network.RequestStatus
 import com.example.cinemahub.ui.components.ErrorScreen
 import com.example.cinemahub.ui.components.LoadingScreen
 import com.example.cinemahub.ui.theme.CinemaHubTheme
+import kotlinx.coroutines.delay
 import kotlinx.datetime.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -60,6 +68,7 @@ fun FavoritesScreen(
     viewModel: FavoritesViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val pullRefreshState = rememberPullToRefreshState()
 
     Scaffold(
         topBar = {
@@ -73,7 +82,8 @@ fun FavoritesScreen(
                 actions = {
                     IconButton(
                         onClick = {
-                            viewModel.fetchFavorites()
+                            pullRefreshState.startRefresh()
+//                            viewModel.fetchFavorites()
                         }
                     ) {
                         Icon(
@@ -86,19 +96,20 @@ fun FavoritesScreen(
                     titleContentColor = MaterialTheme.colorScheme.primary,
                     actionIconContentColor = MaterialTheme.colorScheme.primary
                 ),
-                modifier = modifier
+//                modifier = Modifier
             )
         },
         modifier = modifier
     ) {
         FavoritesScreenContent(
             uiState = uiState,
-            retryAction = {
+            pullRefreshState = pullRefreshState,
+            onRefresh = {
                 viewModel.fetchFavorites()
+//                    pullRefreshState.startRefresh()
             },
             onFavoriteClick = { movieId ->
                 viewModel.removeFavorite(movieId)
-//                viewModel.fetchFavorites()
             },
             modifier = Modifier
                 .padding(it)
@@ -112,62 +123,91 @@ fun FavoritesScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FavoritesScreenContent(
     uiState: FavoritesScreenUiState,
-    retryAction: () -> Unit,
+    pullRefreshState: PullToRefreshState,
+    onRefresh: () -> Unit,
     onFavoriteClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    when (uiState.favoritesRequestStatus) {
-        is RequestStatus.Error -> {
-            Column {
-                ErrorScreen(
-                    retryAction = retryAction,
-                    modifier = modifier
-                        .fillMaxSize()
-                )
-                Text(uiState.favoritesRequestStatus.exception.toString())
-            }
-        }
 
-        is RequestStatus.Loading -> {
-            LoadingScreen(
-                modifier = modifier
-                    .fillMaxSize()
-            )
+    if (pullRefreshState.isRefreshing) {
+        LaunchedEffect(Unit) {
+            delay(1500)
+            onRefresh()
+            pullRefreshState.endRefresh()
         }
+    }
 
-        is RequestStatus.Success -> {
-            val favorites = remember { uiState.favoritesRequestStatus.data }
-            if (favorites.isEmpty()) {
-                Column(
-                    modifier = modifier
-                        .fillMaxWidth()
-                ) {
-                    Text("The list is empty")
-                    Button(
-                        onClick = {}
-                    ) {
-                        Text("Add some movies")
-                    }
-                }
-            } else {
-                LazyColumn(
-                    modifier = modifier
-                        .fillMaxWidth()
-                ) {
-                    items(items = favorites, key = { it.movie.movieId }) { favorite ->
-                        MovieListItemCompact(
-                            favorite = favorite,
-                            isFavorite = true,
-                            onFavoriteClick = onFavoriteClick,
-                            modifier = Modifier.padding(bottom = 16.dp)
+    Box(
+        modifier = modifier
+            .nestedScroll(pullRefreshState.nestedScrollConnection)
+    ) {
+        LazyColumn(
+            contentPadding = PaddingValues(vertical = 8.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+        ) {
+            when (uiState.favoritesRequestStatus) {
+                is RequestStatus.Error -> {
+                    items(1) {
+                        ErrorScreen(
+                            onRefresh = { pullRefreshState.startRefresh() },
+                            modifier = Modifier
+                                .fillMaxSize()
                         )
                     }
                 }
+
+                is RequestStatus.Loading -> {
+                    items(1) {
+//                        Box(
+//                            modifier = Modifier.fillMaxSize()
+//                        ) {}
+                        LoadingScreen(
+                            modifier = Modifier
+                                .fillMaxSize()
+                        )
+                    }
+                }
+
+                is RequestStatus.Success -> {
+                    val favorites = uiState.favoritesRequestStatus.data
+                    if (favorites.isEmpty()) {
+                        items(1) {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                            ) {
+                                Text("The list is empty")
+                                Button(
+                                    onClick = {}
+                                ) {
+                                    Text("Add some movies")
+                                }
+                            }
+                        }
+                    } else {
+                        items(items = favorites, key = { it.movie.movieId }) { favorite ->
+                            MovieListItemCompact(
+                                favorite = favorite,
+                                isFavorite = true,
+                                onFavoriteClick = onFavoriteClick,
+                                modifier = Modifier.padding(vertical = 8.dp)
+                            )
+                        }
+                    }
+                }
             }
         }
+
+        PullToRefreshContainer(
+            modifier = Modifier
+                .align(Alignment.TopCenter),
+            state = pullRefreshState
+        )
     }
 }
 
