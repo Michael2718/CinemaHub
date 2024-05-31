@@ -7,6 +7,7 @@ import com.example.cinemahub.model.api.movie.MoviesResponse
 import com.example.cinemahub.model.api.user.Token
 import com.example.cinemahub.model.api.user.User
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
@@ -19,18 +20,51 @@ interface CinemaHubApiService {
     suspend fun getAllMovies(@Header("Authorization") authHeader: String): MoviesResponse
 
     @GET("movie/{movieId}")
-    suspend fun getMovieById(@Path("movieId") movieId: String, @Header("Authorization") authHeader: String): Movie
+    suspend fun getMovieById(
+        @Path("movieId") movieId: String,
+        @Header("Authorization") authHeader: String
+    ): Movie
 
+    /*
+    * Favorites
+    * */
     @GET("favorites/{userId}")
-    suspend fun getFavorites(@Path("userId") userId: Int, @Header("Authorization") authHeader: String): List<FavoriteResponse>
+    suspend fun getFavorites(
+        @Path("userId") userId: Int,
+        @Header("Authorization") authHeader: String
+    ): List<FavoriteResponse>
+
+    @DELETE("favorites/{userId}/{movieId}")
+    suspend fun deleteFavorite(
+        @Path("userId") userId: Int,
+        @Path("movieId") movieId: String,
+        @Header("Authorization") authHeader: String
+    )
+
+    @DELETE("favorites/{userId}")
+    suspend fun deleteAllFavorites(
+        @Path("userId") userId: Int,
+        @Header("Authorization") authHeader: String
+    )
 
     @GET("history/{userId}")
-    suspend fun getHistory(@Path("userId") userId: Int, @Header("Authorization") authHeader: String): List<HistoryResponse>
+    suspend fun getHistory(
+        @Path("userId") userId: Int,
+        @Header("Authorization") authHeader: String
+    ): List<HistoryResponse>
 
     @GET("user/{userId}")
-    suspend fun getUserById(@Path("userId") userId: Int, @Header("Authorization") authHeader: String) : User
+    suspend fun getUserById(
+        @Path("userId") userId: Int,
+        @Header("Authorization") authHeader: String
+    ): User
+
     @GET("user")
-    suspend fun getUserByUsername(@Query("username") username: String, @Header("Authorization") authHeader: String) : User
+    suspend fun getUserByUsername(
+        @Query("username") username: String,
+        @Header("Authorization") authHeader: String
+    ): User
+
     @POST("login")
-    suspend fun login(@Body credentials: Map<String, String>) : Token
+    suspend fun login(@Body credentials: Map<String, String>): Token
 }

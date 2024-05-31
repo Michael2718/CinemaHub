@@ -16,6 +16,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -26,9 +28,11 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -44,6 +48,7 @@ import com.example.cinemahub.R
 import com.example.cinemahub.model.api.favorite.FavoriteResponse
 import com.example.cinemahub.model.api.movie.Movie
 import com.example.cinemahub.network.RequestStatus
+import com.example.cinemahub.ui.components.ErrorScreen
 import com.example.cinemahub.ui.components.LoadingScreen
 import com.example.cinemahub.ui.theme.CinemaHubTheme
 import kotlinx.datetime.LocalDate
@@ -62,11 +67,25 @@ fun FavoritesScreen(
                 title = {
                     Text(
                         text = "Favorite movies",
-//                        color = MaterialTheme.colorScheme,
-//                        fontWeight = FontWeight.Bold,
                         style = MaterialTheme.typography.headlineSmall
                     )
                 },
+                actions = {
+                    IconButton(
+                        onClick = {
+                            viewModel.fetchFavorites()
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Refresh,
+                            contentDescription = "Refresh"
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    titleContentColor = MaterialTheme.colorScheme.primary,
+                    actionIconContentColor = MaterialTheme.colorScheme.primary
+                ),
                 modifier = modifier
             )
         },
@@ -74,6 +93,13 @@ fun FavoritesScreen(
     ) {
         FavoritesScreenContent(
             uiState = uiState,
+            retryAction = {
+                viewModel.fetchFavorites()
+            },
+            onFavoriteClick = { movieId ->
+                viewModel.removeFavorite(movieId)
+//                viewModel.fetchFavorites()
+            },
             modifier = Modifier
                 .padding(it)
                 .padding(
@@ -89,14 +115,20 @@ fun FavoritesScreen(
 @Composable
 fun FavoritesScreenContent(
     uiState: FavoritesScreenUiState,
+    retryAction: () -> Unit,
+    onFavoriteClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     when (uiState.favoritesRequestStatus) {
         is RequestStatus.Error -> {
-            Text(
-                uiState.favoritesRequestStatus.exception.toString(),
-                modifier = modifier
-            )
+            Column {
+                ErrorScreen(
+                    retryAction = retryAction,
+                    modifier = modifier
+                        .fillMaxSize()
+                )
+                Text(uiState.favoritesRequestStatus.exception.toString())
+            }
         }
 
         is RequestStatus.Loading -> {
@@ -107,21 +139,32 @@ fun FavoritesScreenContent(
         }
 
         is RequestStatus.Success -> {
-            val favorites = uiState.favoritesRequestStatus.data
-            LazyColumn(
-//                verticalArrangement = Arrangement.SpaceEvenly,
-                modifier = modifier
-                    .fillMaxWidth()
-            ) {
-                items(items = favorites) { favorite ->
-                    MovieListItemCompact(
-                        favorite = favorite,
-                        isFavorite = true,
-                        onFavoriteClick = {
-
-                        },
-                        modifier = Modifier.padding(bottom = 16.dp)
-                    )
+            val favorites = remember { uiState.favoritesRequestStatus.data }
+            if (favorites.isEmpty()) {
+                Column(
+                    modifier = modifier
+                        .fillMaxWidth()
+                ) {
+                    Text("The list is empty")
+                    Button(
+                        onClick = {}
+                    ) {
+                        Text("Add some movies")
+                    }
+                }
+            } else {
+                LazyColumn(
+                    modifier = modifier
+                        .fillMaxWidth()
+                ) {
+                    items(items = favorites, key = { it.movie.movieId }) { favorite ->
+                        MovieListItemCompact(
+                            favorite = favorite,
+                            isFavorite = true,
+                            onFavoriteClick = onFavoriteClick,
+                            modifier = Modifier.padding(bottom = 16.dp)
+                        )
+                    }
                 }
             }
         }
@@ -132,11 +175,11 @@ fun FavoritesScreenContent(
 fun MovieListItemCompact(
     favorite: FavoriteResponse,
     isFavorite: Boolean,
-    onFavoriteClick: () -> Unit,
+    onFavoriteClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val movie = favorite.movie
-    val addedDate = favorite.addedDate
+    val movie = remember { favorite.movie }
+    val addedDate = remember { favorite.addedDate }
 
     Card(
         modifier = modifier
@@ -216,7 +259,9 @@ fun MovieListItemCompact(
                 )
             }
             IconButton(
-                onClick = onFavoriteClick
+                onClick = {
+                    onFavoriteClick(movie.movieId)
+                }
             ) {
                 Icon(
                     imageVector = if (isFavorite) {

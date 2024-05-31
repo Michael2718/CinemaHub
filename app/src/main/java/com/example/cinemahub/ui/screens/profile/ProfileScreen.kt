@@ -23,6 +23,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -31,12 +32,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.cinemahub.R
 import com.example.cinemahub.network.RequestStatus
+import com.example.cinemahub.ui.components.ErrorScreen
 import com.example.cinemahub.ui.components.LoadingScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -56,16 +56,23 @@ fun ProfileScreen(
                     IconButton(onClick = onLogOut) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ExitToApp,
-                            contentDescription = stringResource(R.string.back)
+                            contentDescription = "LogOut"
                         )
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    titleContentColor = MaterialTheme.colorScheme.primary,
+                    actionIconContentColor = MaterialTheme.colorScheme.primary
+                ),
             )
         },
         modifier = modifier
     ) {
         ProfileScreenContent(
             uiState = uiState,
+            retryAction = {
+                viewModel.fetchUser()
+            },
             modifier = Modifier
                 .padding(it)
                 .padding(
@@ -81,14 +88,18 @@ fun ProfileScreen(
 @Composable
 fun ProfileScreenContent(
     uiState: ProfileScreenUiState,
+    retryAction: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column {
         when (uiState.userRequestStatus) {
-            is RequestStatus.Error -> Text(
-                uiState.userRequestStatus.exception.toString(),
-                modifier = modifier
-            )
+            is RequestStatus.Error -> {
+                ErrorScreen(
+                    retryAction = retryAction,
+                    modifier = modifier
+                        .fillMaxSize()
+                )
+            }
 
             is RequestStatus.Loading -> {
                 LoadingScreen(

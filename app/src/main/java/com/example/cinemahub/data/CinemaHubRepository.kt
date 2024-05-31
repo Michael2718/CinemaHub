@@ -20,6 +20,9 @@ interface CinemaHubRepository {
     suspend fun getMovieById(movieId: String): Movie
 
     suspend fun getFavorites(userId: Int): List<FavoriteResponse>
+    suspend fun deleteFavorite(userId: Int, movieId: String): Boolean
+    suspend fun deleteAllFavorites(userId: Int): Boolean
+
     suspend fun getHistory(userId: Int): List<HistoryResponse>
 
     suspend fun getUserById(userId: Int): User
@@ -57,7 +60,25 @@ class NetworkCinemaHubRepository(
     }
 
     override suspend fun getFavorites(userId: Int): List<FavoriteResponse> {
-        return cinemaHubApiService.getFavorites(userId = userId, authHeader = getHeader())
+        return cinemaHubApiService.getFavorites(userId, getHeader())
+    }
+
+    override suspend fun deleteFavorite(userId: Int, movieId: String): Boolean {
+        return try {
+            cinemaHubApiService.deleteFavorite(userId, movieId, getHeader())
+            true
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    override suspend fun deleteAllFavorites(userId: Int): Boolean {
+        return try {
+            cinemaHubApiService.deleteAllFavorites(userId, getHeader())
+            true
+        } catch (e: Exception) {
+            false
+        }
     }
 
     override suspend fun getHistory(userId: Int): List<HistoryResponse> {

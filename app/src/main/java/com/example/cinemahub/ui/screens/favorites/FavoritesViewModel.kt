@@ -28,10 +28,16 @@ class FavoritesViewModel @Inject constructor(
     val uiState: StateFlow<FavoritesScreenUiState> = _uiState
 
     init {
-        getFavorites(_uiState.value.userId)
+        fetchFavorites()
     }
 
-    fun getFavorites(userId: Int) {
+    fun fetchFavorites(userId: Int = uiState.value.userId) {
+        _uiState.update {
+            it.copy(
+                favoritesRequestStatus = RequestStatus.Loading()
+            )
+        }
+
         viewModelScope.launch(Dispatchers.IO) {
             _uiState.update {
                 it.copy(
@@ -42,6 +48,13 @@ class FavoritesViewModel @Inject constructor(
                     }
                 )
             }
+        }
+    }
+
+    fun removeFavorite(movieId: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.deleteFavorite(uiState.value.userId, movieId)
+            fetchFavorites(uiState.value.userId)
         }
     }
 }

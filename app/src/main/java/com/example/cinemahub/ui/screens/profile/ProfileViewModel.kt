@@ -26,10 +26,16 @@ class ProfileViewModel @Inject constructor(
 
     init {
         updateUserid(PreferenceManagerSingleton.getUserId())
-        fetchUser(_uiState.value.userId)
+        fetchUser()
     }
 
-    fun fetchUser(userId: Int) {
+    fun fetchUser(userId: Int = uiState.value.userId) {
+        _uiState.update {
+            it.copy(
+                userRequestStatus = RequestStatus.Loading()
+            )
+        }
+
         viewModelScope.launch(Dispatchers.IO) {
             _uiState.update {
                 it.copy(
