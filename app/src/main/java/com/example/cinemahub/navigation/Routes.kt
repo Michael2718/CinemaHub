@@ -10,14 +10,17 @@ sealed class Routes(val route: String) {
 
     data object Main : Routes("main")
 
-    data object Home : Routes("home")
-    data object Search : Routes("search")
-    data object Favorites : Routes("favorites")
-    data object Profile : Routes("profile")
-
     data object HomeGraph : Routes("home_graph")
+    data object Home : Routes("home")
+
     data object SearchGraph : Routes("search_graph")
+    data object Search : Routes("search")
+    data object SearchFilter : Routes("search_filter")
+
     data object FavoritesGraph : Routes("favorites_graph")
+    data object Favorites : Routes("favorites")
+
     data object ProfileGraph : Routes("profile_graph")
+    data object Profile : Routes("profile")
 }
 

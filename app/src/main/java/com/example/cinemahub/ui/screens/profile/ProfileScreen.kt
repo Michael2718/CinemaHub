@@ -43,8 +43,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.cinemahub.network.RequestStatus
-import com.example.cinemahub.ui.components.ErrorScreen
-import com.example.cinemahub.ui.components.LoadingScreen
+import com.example.cinemahub.ui.composables.ErrorScreen
+import com.example.cinemahub.ui.composables.LoadingScreen
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)

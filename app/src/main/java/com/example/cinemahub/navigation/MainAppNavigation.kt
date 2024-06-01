@@ -1,6 +1,7 @@
 package com.example.cinemahub.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
@@ -13,7 +14,9 @@ import com.example.cinemahub.ui.screens.home.HomeScreen
 import com.example.cinemahub.ui.screens.home.HomeViewModel
 import com.example.cinemahub.ui.screens.profile.ProfileScreen
 import com.example.cinemahub.ui.screens.profile.ProfileViewModel
+import com.example.cinemahub.ui.screens.search.SearchFiltersScreen
 import com.example.cinemahub.ui.screens.search.SearchScreen
+import com.example.cinemahub.ui.screens.search.SearchViewModel
 
 @Composable
 fun MainAppNavigation(
@@ -54,8 +57,35 @@ fun NavGraphBuilder.searchGraph(
     navController: NavHostController
 ) {
     navigation(startDestination = Routes.Search.route, route = Routes.SearchGraph.route) {
-        composable(Routes.Search.route) {
-            SearchScreen()
+        composable(Routes.Search.route) { navBackStackEntry ->
+            val parentEntry = remember(navBackStackEntry) {
+                navController.getBackStackEntry(Routes.SearchGraph.route)
+            }
+            val viewModel: SearchViewModel = hiltViewModel(parentEntry)
+            SearchScreen(
+                viewModel = viewModel,
+                onFilter = {
+                    navController.navigate(Routes.SearchFilter.route)
+                }
+            )
+        }
+
+        composable(Routes.SearchFilter.route) { navBackStackEntry ->
+            val parentEntry = remember(navBackStackEntry) {
+                navController.getBackStackEntry(Routes.SearchGraph.route)
+            }
+            val viewModel: SearchViewModel = hiltViewModel(parentEntry)
+            SearchFiltersScreen(
+                viewModel = viewModel,
+                onBack = {
+                    viewModel.search()
+                    navController.navigate(Routes.Search.route)
+                },
+                onApply = {
+                    viewModel.search()
+                    navController.navigateUp()
+                }
+            )
         }
     }
 }

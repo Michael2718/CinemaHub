@@ -19,4 +19,6 @@ typealias MoviesRequestStatus = RequestStatus<List<Movie>>
 typealias UserRequestStatus = RequestStatus<User>
 typealias TokenRequestStatus = RequestStatus<Token>
 typealias FavoritesRequestStatus = RequestStatus<List<FavoriteResponse>>
+typealias SearchRequestStatus = RequestStatus<List<Movie>> // TODO: !!!
+
 //typealias HistoryRequestStatus = RequestStatus<List<HistoryResponse>>

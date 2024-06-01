@@ -12,12 +12,25 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.withContext
+import kotlinx.datetime.LocalDate
 
 interface CinemaHubRepository {
     suspend fun updateToken(newToken: String)
 
     suspend fun getAllMovies(): List<Movie>
     suspend fun getMovieById(movieId: String): Movie
+    suspend fun searchMovies(
+        query: String?,
+        minVoteAverage: Double? = null,
+        maxVoteAverage: Double? = null,
+        minReleaseDate: LocalDate? = null,
+        maxReleaseDate: LocalDate? = null,
+//        minDuration: PGInterval? = null,
+//        maxDuration: PGInterval? = null,
+//        minPrice: PGmoney? = null,
+//        maxPrice: PGmoney? = null,
+        isAdult: Boolean? = null
+    ): List<Movie>
 
     suspend fun getFavorites(userId: Int): List<FavoriteResponse>
     suspend fun deleteFavorite(userId: Int, movieId: String): Boolean
@@ -57,6 +70,33 @@ class NetworkCinemaHubRepository(
 
     override suspend fun getMovieById(movieId: String): Movie {
         return cinemaHubApiService.getMovieById(movieId = movieId, authHeader = getHeader())
+    }
+
+    override suspend fun searchMovies(
+        query: String?,
+        minVoteAverage: Double?,
+        maxVoteAverage: Double?,
+        minReleaseDate: LocalDate?,
+        maxReleaseDate: LocalDate?,
+//        minDuration: PGInterval?,
+//        maxDuration: PGInterval?,
+//        minPrice: PGmoney?,
+//        maxPrice: PGmoney?,
+        isAdult: Boolean?
+    ): List<Movie> {
+        return cinemaHubApiService.searchMovies(
+            query = query,
+            minVoteAverage = minVoteAverage,
+            maxVoteAverage = maxVoteAverage,
+            minReleaseDate = minReleaseDate,
+            maxReleaseDate = maxReleaseDate,
+//            minDuration = minDuration,
+//            maxDuration = maxDuration,
+//            minPrice = minPrice,
+//            maxPrice = maxPrice,
+            isAdult = isAdult,
+            authHeader = getHeader()
+        )
     }
 
     override suspend fun getFavorites(userId: Int): List<FavoriteResponse> {

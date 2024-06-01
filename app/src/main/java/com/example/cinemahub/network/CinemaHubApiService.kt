@@ -6,6 +6,7 @@ import com.example.cinemahub.model.api.movie.Movie
 import com.example.cinemahub.model.api.movie.MoviesResponse
 import com.example.cinemahub.model.api.user.Token
 import com.example.cinemahub.model.api.user.User
+import kotlinx.datetime.LocalDate
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -15,7 +16,9 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface CinemaHubApiService {
-    // Movie
+    /*
+    * Movies
+    * */
     @GET("movie")
     suspend fun getAllMovies(@Header("Authorization") authHeader: String): MoviesResponse
 
@@ -24,6 +27,21 @@ interface CinemaHubApiService {
         @Path("movieId") movieId: String,
         @Header("Authorization") authHeader: String
     ): Movie
+
+    @GET("search")
+    suspend fun searchMovies(
+        @Query("query") query: String?,
+        @Query("minVoteAverage") minVoteAverage: Double?,
+        @Query("maxVoteAverage") maxVoteAverage: Double?,
+        @Query("minReleaseDate") minReleaseDate: LocalDate?,
+        @Query("maxReleaseDate") maxReleaseDate: LocalDate?,
+//        @Query("minDuration") minDuration: PGInterval?,
+//        @Query("maxDuration") maxDuration: PGInterval?,
+//        @Query("minPrice") minPrice: PGmoney?,
+//        @Query("maxPrice") maxPrice: PGmoney?,
+        @Query("isAdult") isAdult: Boolean?,
+        @Header("Authorization") authHeader: String
+    ): List<Movie>
 
     /*
     * Favorites
@@ -47,12 +65,18 @@ interface CinemaHubApiService {
         @Header("Authorization") authHeader: String
     )
 
+    /*
+    * History
+    * */
     @GET("history/{userId}")
     suspend fun getHistory(
         @Path("userId") userId: Int,
         @Header("Authorization") authHeader: String
     ): List<HistoryResponse>
 
+    /*
+    * User
+    * */
     @GET("user/{userId}")
     suspend fun getUserById(
         @Path("userId") userId: Int,
