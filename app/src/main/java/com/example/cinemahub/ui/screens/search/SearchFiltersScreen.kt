@@ -184,7 +184,7 @@ fun SearchFiltersContent(
         ) {
             Text(text = "Adult Content")
             Switch(
-                checked = false,
+                checked = uiState.isAdult,
                 onCheckedChange = onAdultSwitchChange
             )
         }

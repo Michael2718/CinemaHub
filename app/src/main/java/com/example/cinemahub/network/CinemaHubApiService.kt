@@ -3,10 +3,12 @@ package com.example.cinemahub.network
 import com.example.cinemahub.model.api.favorite.FavoriteResponse
 import com.example.cinemahub.model.api.history.HistoryResponse
 import com.example.cinemahub.model.api.movie.Movie
+import com.example.cinemahub.model.api.movie.MovieSearchResponse
 import com.example.cinemahub.model.api.movie.MoviesResponse
 import com.example.cinemahub.model.api.user.Token
 import com.example.cinemahub.model.api.user.User
 import kotlinx.datetime.LocalDate
+import org.postgresql.util.PGInterval
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -35,13 +37,14 @@ interface CinemaHubApiService {
         @Query("maxVoteAverage") maxVoteAverage: Double?,
         @Query("minReleaseDate") minReleaseDate: LocalDate?,
         @Query("maxReleaseDate") maxReleaseDate: LocalDate?,
-//        @Query("minDuration") minDuration: PGInterval?,
-//        @Query("maxDuration") maxDuration: PGInterval?,
-//        @Query("minPrice") minPrice: PGmoney?,
-//        @Query("maxPrice") maxPrice: PGmoney?,
+        @Query("minDuration") minDuration: PGInterval?,
+        @Query("maxDuration") maxDuration: PGInterval?,
+        @Query("minPrice") minPrice: Double?,
+        @Query("maxPrice") maxPrice: Double?,
         @Query("isAdult") isAdult: Boolean?,
+        @Query("userId") userId: Int?,
         @Header("Authorization") authHeader: String
-    ): List<Movie>
+    ): List<MovieSearchResponse>
 
     /*
     * Favorites

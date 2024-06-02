@@ -4,6 +4,7 @@ import com.example.cinemahub.PreferenceManagerSingleton
 import com.example.cinemahub.model.api.favorite.FavoriteResponse
 import com.example.cinemahub.model.api.history.HistoryResponse
 import com.example.cinemahub.model.api.movie.Movie
+import com.example.cinemahub.model.api.movie.MovieSearchResponse
 import com.example.cinemahub.model.api.user.Token
 import com.example.cinemahub.model.api.user.User
 import com.example.cinemahub.network.CinemaHubApiService
@@ -13,6 +14,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.LocalDate
+import org.postgresql.util.PGInterval
 
 interface CinemaHubRepository {
     suspend fun updateToken(newToken: String)
@@ -25,16 +27,18 @@ interface CinemaHubRepository {
         maxVoteAverage: Double? = null,
         minReleaseDate: LocalDate? = null,
         maxReleaseDate: LocalDate? = null,
-//        minDuration: PGInterval? = null,
-//        maxDuration: PGInterval? = null,
-//        minPrice: PGmoney? = null,
-//        maxPrice: PGmoney? = null,
-        isAdult: Boolean? = null
-    ): List<Movie>
+        minDuration: PGInterval? = null,
+        maxDuration: PGInterval? = null,
+        minPrice: Double? = null,
+        maxPrice: Double? = null,
+        isAdult: Boolean? = null,
+        userId: Int?
+    ): List<MovieSearchResponse>
 
     suspend fun getFavorites(userId: Int): List<FavoriteResponse>
     suspend fun deleteFavorite(userId: Int, movieId: String): Boolean
     suspend fun deleteAllFavorites(userId: Int): Boolean
+    suspend fun addFavorite(userId: Int, movieId: String): Boolean
 
     suspend fun getHistory(userId: Int): List<HistoryResponse>
 
@@ -78,25 +82,28 @@ class NetworkCinemaHubRepository(
         maxVoteAverage: Double?,
         minReleaseDate: LocalDate?,
         maxReleaseDate: LocalDate?,
-//        minDuration: PGInterval?,
-//        maxDuration: PGInterval?,
-//        minPrice: PGmoney?,
-//        maxPrice: PGmoney?,
-        isAdult: Boolean?
-    ): List<Movie> {
-        return cinemaHubApiService.searchMovies(
+        minDuration: PGInterval?,
+        maxDuration: PGInterval?,
+        minPrice: Double?,
+        maxPrice: Double?,
+        isAdult: Boolean?,
+        userId: Int?
+    ): List<MovieSearchResponse> {
+        val movies = cinemaHubApiService.searchMovies(
             query = query,
             minVoteAverage = minVoteAverage,
             maxVoteAverage = maxVoteAverage,
             minReleaseDate = minReleaseDate,
             maxReleaseDate = maxReleaseDate,
-//            minDuration = minDuration,
-//            maxDuration = maxDuration,
-//            minPrice = minPrice,
-//            maxPrice = maxPrice,
+            minDuration = minDuration,
+            maxDuration = maxDuration,
+            minPrice = minPrice,
+            maxPrice = maxPrice,
             isAdult = isAdult,
+            userId = userId,
             authHeader = getHeader()
         )
+        return movies
     }
 
     override suspend fun getFavorites(userId: Int): List<FavoriteResponse> {
@@ -115,6 +122,15 @@ class NetworkCinemaHubRepository(
     override suspend fun deleteAllFavorites(userId: Int): Boolean {
         return try {
             cinemaHubApiService.deleteAllFavorites(userId, getHeader())
+            true
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    override suspend fun addFavorite(userId: Int, movieId: String): Boolean {
+        return try {
+            cinemaHubApiService.addFavorite(userId, movieId, getHeader())
             true
         } catch (e: Exception) {
             false

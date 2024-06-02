@@ -12,7 +12,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.cinemahub"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -74,6 +74,7 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlinx.datetime)
     implementation(libs.androidx.preference.ktx)
+    implementation(libs.postgresql)
     kapt(libs.google.dagger.hilt.compiler)
 
     testImplementation(libs.junit)
@@ -86,3 +87,6 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 }
 
+//tasks.withType<JavaCompile> {
+//    options.compilerArgs.add("-Xlint:deprecation")
+//}

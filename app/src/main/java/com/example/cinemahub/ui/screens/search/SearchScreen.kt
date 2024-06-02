@@ -139,7 +139,9 @@ fun SearchScreen(
             onRefresh = {
                 viewModel.search()
             },
-            onFavoriteClick = {},
+            onFavoriteClick = { movieId, isFavorite ->
+                viewModel.onFavoriteClick(movieId, isFavorite)
+            },
             modifier = Modifier
                 .padding(innerPadding)
                 .padding(
@@ -158,7 +160,7 @@ fun SearchScreenContent(
     uiState: SearchScreenUiState,
     pullRefreshState: PullToRefreshState,
     onRefresh: () -> Unit,
-    onFavoriteClick: (String) -> Unit,
+    onFavoriteClick: (String, Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
     if (pullRefreshState.isRefreshing) {
@@ -215,10 +217,13 @@ fun SearchScreenContent(
                         items(items = movies, key = { it.movieId }) { movie ->
                             MovieListItemCompact(
                                 movie = movie,
-                                supportingText = "Price: $9.99",
-                                isFavorite = false,
+                                supportingText = "Price: ${movie.price}",
                                 onFavoriteClick = onFavoriteClick,
-                                modifier = Modifier.padding(vertical = 8.dp)
+                                onMovieClick = {
+
+                                },
+                                modifier = Modifier
+                                    .padding(vertical = 8.dp)
                             )
                         }
                     }

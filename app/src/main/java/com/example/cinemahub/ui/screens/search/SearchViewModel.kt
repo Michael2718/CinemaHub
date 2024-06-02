@@ -4,6 +4,7 @@ import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.cinemahub.PreferenceManagerSingleton
 import com.example.cinemahub.data.CinemaHubRepository
 import com.example.cinemahub.network.RequestStatus
 import com.example.cinemahub.network.SearchRequestStatus
@@ -22,7 +23,9 @@ class SearchViewModel @Inject constructor(
     private val repository: CinemaHubRepository
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(
-        SearchScreenUiState()
+        SearchScreenUiState(
+            userId = PreferenceManagerSingleton.getUserId()
+        )
     )
 
     val uiState: StateFlow<SearchScreenUiState> = _uiState
@@ -81,11 +84,12 @@ class SearchViewModel @Inject constructor(
                                 },
 //                                minDuration,
 //                                maxDuration,
-//                                minPrice,
-//                                maxPrice,
+                                minPrice = uiState.value.priceSlider.start.toInt().toDouble(),
+                                maxPrice = uiState.value.priceSlider.endInclusive.toInt()
+                                    .toDouble(),
                                 isAdult = uiState.value.isAdult,
+                                userId = uiState.value.userId
                             )
-
                         )
                     } catch (e: Exception) {
                         RequestStatus.Error(e)
@@ -142,6 +146,22 @@ class SearchViewModel @Inject constructor(
             )
         }
     }
+
+    fun onFavoriteClick(movieId: String, isFavorite: Boolean) {
+        viewModelScope.launch(Dispatchers.IO) {
+            if (isFavorite) {
+                repository.deleteFavorite(
+                    userId = uiState.value.userId,
+                    movieId = movieId)
+            } else {
+                repository.addFavorite(
+                    userId = uiState.value.userId,
+                    movieId = movieId
+                )
+            }
+            search()
+        }
+    }
 }
 
 data class SearchScreenUiState(
@@ -149,24 +169,9 @@ data class SearchScreenUiState(
     val isSearching: Boolean = false,
     val searchRequestStatus: SearchRequestStatus = RequestStatus.Loading(),
     // Filters
-//    val minReleaseYear: Int? = null,
-//    val maxReleaseYear: Int? = null,
-//    val minDuration: PGInterval?,
-//    val maxDuration: PGInterval?,
-//    val minPrice: PGmoney?,
-//    val maxPrice: PGmoney?,
-//    val isAdult: Boolean? = null,
-
     val ratingSlider: ClosedFloatingPointRange<Float> = 0f..10f,
     val minReleaseYear: String = "",
     val maxReleaseYear: String = "",
-//    val runtimes: List<FilterChip> = listOf(
-//        FilterChip("1 hour or less"),
-//        FilterChip("1-2 hours"),
-//        FilterChip("2-3 hours"),
-//        FilterChip("3-4 hours"),
-//        FilterChip("4+ hours")
-//    ),
     val runtimes: List<String> = listOf(
         "1 hour or less",
         "1-2 hours",
@@ -175,9 +180,10 @@ data class SearchScreenUiState(
         "4+ hours"
     ),
     val selectedRuntimes: Set<String> = setOf(),
-
     val priceSlider: ClosedFloatingPointRange<Float> = 0f..30f,
-    val isAdult: Boolean = false
+    val isAdult: Boolean = false,
+
+    val userId: Int
 )
 
 //data class FilterChip(
