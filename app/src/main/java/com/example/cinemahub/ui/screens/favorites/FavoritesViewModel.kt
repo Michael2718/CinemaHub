@@ -51,7 +51,7 @@ class FavoritesViewModel @Inject constructor(
         }
     }
 
-    fun removeFavorite(movieId: String) {
+    fun deleteFavorite(movieId: String) {
         viewModelScope.launch(Dispatchers.IO) {
             repository.deleteFavorite(uiState.value.userId, movieId)
             fetchFavorites(uiState.value.userId)

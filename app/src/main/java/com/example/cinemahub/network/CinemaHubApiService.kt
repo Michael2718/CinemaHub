@@ -68,6 +68,13 @@ interface CinemaHubApiService {
         @Header("Authorization") authHeader: String
     )
 
+    @POST("favorites")
+    suspend fun addFavorite(
+        @Query("userId") userId: Int?,
+        @Query("movieId") movieId: String?,
+        @Header("Authorization") authHeader: String
+    )
+
     /*
     * History
     * */

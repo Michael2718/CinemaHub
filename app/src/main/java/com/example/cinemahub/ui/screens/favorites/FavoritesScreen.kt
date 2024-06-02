@@ -1,6 +1,5 @@
 package com.example.cinemahub.ui.screens.favorites
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -17,7 +16,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -31,18 +29,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.cinemahub.model.api.favorite.FavoriteResponse
-import com.example.cinemahub.model.api.movie.Movie
 import com.example.cinemahub.network.RequestStatus
 import com.example.cinemahub.ui.composables.ErrorScreen
 import com.example.cinemahub.ui.composables.LoadingScreen
 import com.example.cinemahub.ui.composables.MovieListItemCompact
-import com.example.cinemahub.ui.theme.CinemaHubTheme
 import kotlinx.coroutines.delay
-import kotlinx.datetime.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -95,7 +88,7 @@ fun FavoritesScreen(
 //                    pullRefreshState.startRefresh()
             },
             onFavoriteClick = { movieId ->
-                viewModel.removeFavorite(movieId)
+                viewModel.deleteFavorite(movieId)
             },
             modifier = Modifier
                 .padding(it)
@@ -179,6 +172,9 @@ fun FavoritesScreenContent(
                                 supportingText = "Added to the list on ${favorite.addedDate}",
                                 isFavorite = true,
                                 onFavoriteClick = onFavoriteClick,
+                                onMovieClick = {
+
+                                },
                                 modifier = Modifier.padding(vertical = 8.dp)
                             )
                         }
@@ -198,47 +194,47 @@ fun FavoritesScreenContent(
 
 
 
-@Composable
-@Preview
-fun PreviewMovieListItemCompact() {
-    val movieSample = Movie(
-        "1",
-        "Movie Title",
-        LocalDate.parse("2002-01-01"), // Example date format, adjust based on your actual data structure
-        8.503248,
-        1000,
-        "Plot summary of the movie...",
-        false,
-        75,
-//        10.99, // Example price, adjust based on your actual data structure
-        "https://m.media-amazon.com/images/M/MV5BY2I4MmM1N2EtM2YzOS00OWUzLTkzYzctNDc5NDg2N2IyODJmXkEyXkFqcGdeQXVyNzkwMjQ5NzM@._V1_.jpg"
-    )
-    val favorite = FavoriteResponse(
-        movieSample,
-        LocalDate.parse("2024-01-01")
-    )
-
-    val favorites = listOf(favorite, favorite, favorite, favorite)
-    CinemaHubTheme {
-        Surface {
-            LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            ) {
-                items(items = favorites) { favorite ->
-                    MovieListItemCompact(
-                        movie = favorite.movie,
-                        supportingText = "Added to the list on ${favorite.addedDate}",
-                        isFavorite = true,
-                        onFavoriteClick = {
-
-                        },
-                        modifier = Modifier
-                    )
-                }
-            }
-        }
-    }
-}
+//@Composable
+//@Preview
+//fun PreviewMovieListItemCompact() {
+//    val movieSample = Movie(
+//        "1",
+//        "Movie Title",
+//        LocalDate.parse("2002-01-01"), // Example date format, adjust based on your actual data structure
+//        8.503248,
+//        1000,
+//        "Plot summary of the movie...",
+//        false,
+//        75,
+////        10.99, // Example price, adjust based on your actual data structure
+//        "https://m.media-amazon.com/images/M/MV5BY2I4MmM1N2EtM2YzOS00OWUzLTkzYzctNDc5NDg2N2IyODJmXkEyXkFqcGdeQXVyNzkwMjQ5NzM@._V1_.jpg"
+//    )
+//    val favorite = FavoriteResponse(
+//        movieSample,
+//        LocalDate.parse("2024-01-01")
+//    )
+//
+//    val favorites = listOf(favorite, favorite, favorite, favorite)
+//    CinemaHubTheme {
+//        Surface {
+//            LazyColumn(
+//                verticalArrangement = Arrangement.spacedBy(16.dp),
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .padding(16.dp)
+//            ) {
+//                items(items = favorites) { favorite ->
+//                    MovieListItemCompact(
+//                        movie = favorite.movie,
+//                        supportingText = "Added to the list on ${favorite.addedDate}",
+//                        isFavorite = true,
+//                        onFavoriteClick = {
+//
+//                        },
+//                        modifier = Modifier
+//                    )
+//                }
+//            }
+//        }
+//    }
+//}
