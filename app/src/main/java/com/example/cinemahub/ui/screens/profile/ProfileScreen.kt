@@ -119,7 +119,7 @@ fun ProfileScreenContent(
             modifier = Modifier
                 .verticalScroll(rememberScrollState())
         ) {
-            when (uiState.userRequestStatus) {
+            when (val requestStatus = uiState.userRequestStatus) {
                 is RequestStatus.Error -> {
                     ErrorScreen(
                         onRefresh = { pullRefreshState.startRefresh() },
@@ -136,7 +136,7 @@ fun ProfileScreenContent(
                 }
 
                 is RequestStatus.Success -> {
-                    val user = uiState.userRequestStatus.data
+                    val user = requestStatus.data
                     Column(
                         verticalArrangement = Arrangement.spacedBy(16.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,

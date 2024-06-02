@@ -129,7 +129,7 @@ fun FavoritesScreenContent(
             modifier = Modifier
                 .fillMaxWidth()
         ) {
-            when (uiState.favoritesRequestStatus) {
+            when (val requestStatus = uiState.favoritesRequestStatus) {
                 is RequestStatus.Error -> {
                     items(1) {
                         ErrorScreen(
@@ -150,7 +150,7 @@ fun FavoritesScreenContent(
                 }
 
                 is RequestStatus.Success -> {
-                    val favorites = uiState.favoritesRequestStatus.data
+                    val favorites = requestStatus.data
                     if (favorites.isEmpty()) {
                         items(1) {
                             Column(

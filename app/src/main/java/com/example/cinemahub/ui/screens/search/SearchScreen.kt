@@ -180,7 +180,7 @@ fun SearchScreenContent(
             modifier = Modifier
                 .fillMaxWidth()
         ) {
-            when (uiState.searchRequestStatus) {
+            when (val requestStatus = uiState.searchRequestStatus) {
                 is RequestStatus.Error -> {
                     items(1) {
                         ErrorScreen(
@@ -203,7 +203,7 @@ fun SearchScreenContent(
                 }
 
                 is RequestStatus.Success -> {
-                    val movies = uiState.searchRequestStatus.data
+                    val movies = requestStatus.data
                     if (movies.isEmpty()) {
                         items(1) {
                             Column(
