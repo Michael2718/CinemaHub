@@ -141,6 +141,8 @@ fun SearchScreen(
             },
             onFavoriteClick = { movieId, isFavorite ->
                 viewModel.onFavoriteClick(movieId, isFavorite)
+//                viewModel.search()
+                pullRefreshState.startRefresh()
             },
             modifier = Modifier
                 .padding(innerPadding)
@@ -214,7 +216,7 @@ fun SearchScreenContent(
                             }
                         }
                     } else {
-                        items(items = movies, key = { it.movieId }) { movie ->
+                        items(items = movies) { movie ->
                             MovieListItemCompact(
                                 movie = movie,
                                 supportingText = "Price: ${movie.price}",

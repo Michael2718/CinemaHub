@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
+import org.postgresql.util.PGInterval
 import javax.inject.Inject
 
 @HiltViewModel
@@ -30,13 +31,7 @@ class SearchViewModel @Inject constructor(
 
     val uiState: StateFlow<SearchScreenUiState> = _uiState
 
-//    fun updateQuery(query: TextFieldValue) {
-//        _uiState.update {
-//            it.copy(
-//                query = query
-//            )
-//        }
-//    }
+    fun getRuntimes() = runtimes
 
     fun updateQuery(query: String) {
         _uiState.update {
@@ -65,6 +60,27 @@ class SearchViewModel @Inject constructor(
             _uiState.update {
                 it.copy(
                     searchRequestStatus = try {
+                        val selectedRuntimeIndex = uiState.value.selectedRuntimeIndex
+                        val (minDuration, maxDuration) = when (selectedRuntimeIndex) {
+                            1 -> Pair(null, PGInterval(0, 0, 0, 1, 0, 0.0))
+                            2 -> Pair(
+                                PGInterval(0, 0, 0, 1, 0, 0.0),
+                                PGInterval(0, 0, 0, 2, 0, 0.0)
+                            )
+
+                            3 -> Pair(
+                                PGInterval(0, 0, 0, 2, 0, 0.0),
+                                PGInterval(0, 0, 0, 3, 0, 0.0)
+                            )
+
+                            4 -> Pair(
+                                PGInterval(0, 0, 0, 3, 0, 0.0),
+                                PGInterval(0, 0, 0, 4, 0, 0.0)
+                            )
+
+                            5 -> Pair(PGInterval(0, 0, 0, 4, 0, 0.0), null)
+                            else -> Pair(null, null)
+                        }
                         RequestStatus.Success(
                             repository.searchMovies(
                                 query,
@@ -82,8 +98,8 @@ class SearchViewModel @Inject constructor(
                                 } else {
                                     LocalDate.parse(uiState.value.maxReleaseYear + "-01-01")
                                 },
-//                                minDuration,
-//                                maxDuration,
+                                minDuration = minDuration,
+                                maxDuration = maxDuration,
                                 minPrice = uiState.value.priceSlider.start.toInt().toDouble(),
                                 maxPrice = uiState.value.priceSlider.endInclusive.toInt()
                                     .toDouble(),
@@ -123,10 +139,10 @@ class SearchViewModel @Inject constructor(
         }
     }
 
-    fun updateSelectedRuntimes(selectedRuntimes: Set<String>) {
+    fun updateSelectedRuntimeIndex(index: Int) {
         _uiState.update {
             it.copy(
-                selectedRuntimes = selectedRuntimes
+                selectedRuntimeIndex = index
             )
         }
     }
@@ -152,15 +168,26 @@ class SearchViewModel @Inject constructor(
             if (isFavorite) {
                 repository.deleteFavorite(
                     userId = uiState.value.userId,
-                    movieId = movieId)
+                    movieId = movieId
+                )
             } else {
                 repository.addFavorite(
                     userId = uiState.value.userId,
                     movieId = movieId
                 )
             }
-            search()
         }
+    }
+
+    companion object {
+        private val runtimes = listOf(
+            "Any",
+            "1 hour or less",
+            "1-2 hours",
+            "2-3 hours",
+            "3-4 hours",
+            "4+ hours"
+        )
     }
 }
 
@@ -172,22 +199,9 @@ data class SearchScreenUiState(
     val ratingSlider: ClosedFloatingPointRange<Float> = 0f..10f,
     val minReleaseYear: String = "",
     val maxReleaseYear: String = "",
-    val runtimes: List<String> = listOf(
-        "1 hour or less",
-        "1-2 hours",
-        "2-3 hours",
-        "3-4 hours",
-        "4+ hours"
-    ),
-    val selectedRuntimes: Set<String> = setOf(),
+    val selectedRuntimeIndex: Int = 0,
     val priceSlider: ClosedFloatingPointRange<Float> = 0f..30f,
     val isAdult: Boolean = false,
 
     val userId: Int
 )
-
-//data class FilterChip(
-//    val label: String,
-//    val isSelected: Boolean = false
-//)
-

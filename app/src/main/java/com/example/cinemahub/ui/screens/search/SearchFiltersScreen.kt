@@ -7,15 +7,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -33,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.example.cinemahub.ui.composables.FilterChipGroupSingle
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -82,8 +79,9 @@ fun SearchFiltersScreen(
             onMaxReleaseYearChange = {
                 viewModel.updateMaxReleaseYear(it)
             },
+            runtimes = viewModel.getRuntimes(),
             onRuntimesSelectionChange = {
-                viewModel.updateSelectedRuntimes(it)
+                viewModel.updateSelectedRuntimeIndex(it)
             },
             onPriceSliderChange = {
                 viewModel.updatePriceSlider(it)
@@ -104,8 +102,8 @@ fun SearchFiltersContent(
     onRatingSliderChange: (ClosedFloatingPointRange<Float>) -> Unit,
     onMinReleaseYearChange: (String) -> Unit,
     onMaxReleaseYearChange: (String) -> Unit,
-    onRuntimesSelectionChange: (Set<String>) -> Unit,
-    // TODO: Price
+    runtimes: List<String>,
+    onRuntimesSelectionChange: (Int) -> Unit,
     onPriceSliderChange: (ClosedFloatingPointRange<Float>) -> Unit,
     onAdultSwitchChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier
@@ -159,10 +157,9 @@ fun SearchFiltersContent(
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(text = "Runtime")
-//        var selected by remember { mutableStateOf(false) }
-        FilterChipGroup(
-            items = uiState.runtimes,
-            selectedItems = uiState.selectedRuntimes,
+        FilterChipGroupSingle(
+            items = runtimes,
+            selectedItemIndex = uiState.selectedRuntimeIndex,
             onSelectionChange = onRuntimesSelectionChange
         )
 
@@ -192,44 +189,7 @@ fun SearchFiltersContent(
     }
 }
 
-@Composable
-fun FilterChipGroup(
-    items: List<String>,
-    selectedItems: Set<String>,
-    onSelectionChange: (Set<String>) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    LazyRow(
-        modifier = modifier
-    ) {
-        items(items = items) { item ->
-            val selected = selectedItems.contains(item)
-            FilterChip(
-                label = { Text(item) },
-                onClick = {
-                    onSelectionChange(
-                        if (selected) {
-                            selectedItems - item
-                        } else {
-                            selectedItems + item
-                        }
-                    )
-                },
-                selected = selected,
-                leadingIcon = {
-                    if (selected) {
-                        Icon(
-                            imageVector = Icons.Default.Done,
-                            contentDescription = null
-                        )
-                    }
-                },
-                modifier = Modifier
-                    .padding(horizontal = 4.dp, vertical = 4.dp)
-            )
-        }
-    }
-}
+
 
 //@Preview(showBackground = true)
 //@Composable

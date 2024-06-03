@@ -79,7 +79,7 @@ fun NavGraphBuilder.searchGraph(
                 viewModel = viewModel,
                 onBack = {
                     viewModel.search()
-                    navController.navigate(Routes.Search.route)
+                    navController.navigateUp()
                 },
                 onApply = {
                     viewModel.search()
