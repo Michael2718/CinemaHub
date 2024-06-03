@@ -1,9 +1,10 @@
 package com.example.cinemahub.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.ViewModelStoreOwner
+import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -25,13 +26,19 @@ fun MainAppNavigation(
     modifier: Modifier = Modifier,
     startDestination: String = Routes.HomeGraph.route
 ) {
+    val searchScreenViewModelStoreOwner = checkNotNull(LocalViewModelStoreOwner.current) {
+        "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
+    }
     NavHost(
         modifier = modifier,
         navController = navController,
         startDestination = startDestination
     ) {
         homeGraph(navController = navController)
-        searchGraph(navController = navController)
+        searchGraph(
+            navController = navController,
+            viewModelStoreOwner = searchScreenViewModelStoreOwner
+        )
         favoritesGraph(navController = navController)
         profileGraph(
             navController = navController,
@@ -54,14 +61,12 @@ fun NavGraphBuilder.homeGraph(
 }
 
 fun NavGraphBuilder.searchGraph(
-    navController: NavHostController
+    navController: NavHostController,
+    viewModelStoreOwner: ViewModelStoreOwner
 ) {
     navigation(startDestination = Routes.Search.route, route = Routes.SearchGraph.route) {
-        composable(Routes.Search.route) { navBackStackEntry ->
-            val parentEntry = remember(navBackStackEntry) {
-                navController.getBackStackEntry(Routes.SearchGraph.route)
-            }
-            val viewModel: SearchViewModel = hiltViewModel(parentEntry)
+        composable(Routes.Search.route) {
+            val viewModel: SearchViewModel = hiltViewModel(viewModelStoreOwner)
             SearchScreen(
                 viewModel = viewModel,
                 onFilter = {
@@ -70,11 +75,8 @@ fun NavGraphBuilder.searchGraph(
             )
         }
 
-        composable(Routes.SearchFilter.route) { navBackStackEntry ->
-            val parentEntry = remember(navBackStackEntry) {
-                navController.getBackStackEntry(Routes.SearchGraph.route)
-            }
-            val viewModel: SearchViewModel = hiltViewModel(parentEntry)
+        composable(Routes.SearchFilter.route) {
+            val viewModel: SearchViewModel = hiltViewModel(viewModelStoreOwner)
             SearchFiltersScreen(
                 viewModel = viewModel,
                 onBack = {
