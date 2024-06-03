@@ -8,7 +8,6 @@ import com.example.cinemahub.model.api.movie.MoviesResponse
 import com.example.cinemahub.model.api.user.Token
 import com.example.cinemahub.model.api.user.User
 import kotlinx.datetime.LocalDate
-import org.postgresql.util.PGInterval
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
