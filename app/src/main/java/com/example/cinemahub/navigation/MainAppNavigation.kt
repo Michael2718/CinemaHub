@@ -11,6 +11,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import com.example.cinemahub.ui.screens.favorites.FavoritesScreen
+import com.example.cinemahub.ui.screens.favorites.FavoritesViewModel
 import com.example.cinemahub.ui.screens.home.HomeScreen
 import com.example.cinemahub.ui.screens.home.HomeViewModel
 import com.example.cinemahub.ui.screens.profile.ProfileScreen
@@ -97,7 +98,11 @@ fun NavGraphBuilder.favoritesGraph(
 ) {
     navigation(startDestination = Routes.Favorites.route, route = Routes.FavoritesGraph.route) {
         composable(Routes.Favorites.route) {
-            FavoritesScreen()
+            val viewModel: FavoritesViewModel = hiltViewModel()
+            viewModel.fetchFavorites()
+            FavoritesScreen(
+                viewModel = viewModel
+            )
         }
     }
 }
@@ -111,9 +116,6 @@ fun NavGraphBuilder.profileGraph(
             val viewModel: ProfileViewModel = hiltViewModel()
             ProfileScreen(
                 viewModel = viewModel,
-//                onLogOut = {
-//                    viewModel.logOut().also(onLogOut)
-//                }
                 onLogOut = onLogOut
             )
         }

@@ -21,5 +21,5 @@ typealias UserRequestStatus = RequestStatus<User>
 typealias TokenRequestStatus = RequestStatus<Token>
 typealias FavoritesRequestStatus = RequestStatus<List<FavoriteResponse>>
 typealias SearchRequestStatus = RequestStatus<List<MovieSearchResponse>>
-
 //typealias HistoryRequestStatus = RequestStatus<List<HistoryResponse>>
+typealias SignUpRequestStatus = RequestStatus<Token>

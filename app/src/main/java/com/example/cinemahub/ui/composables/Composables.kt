@@ -1,5 +1,6 @@
 package com.example.cinemahub.ui.composables
 
+import android.app.DatePickerDialog
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -12,11 +13,17 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -24,13 +31,19 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -38,6 +51,8 @@ import coil.request.ImageRequest
 import com.example.cinemahub.R
 import com.example.cinemahub.model.api.movie.Movie
 import com.example.cinemahub.model.api.movie.MovieSearchResponse
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 @Composable
 fun LoadingScreen(modifier: Modifier = Modifier) {
@@ -372,3 +387,128 @@ fun FilterChipGroupSingle(
 //        }
 //    }
 //}
+
+@Composable
+fun CommonTextField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    label: @Composable (() -> Unit),
+    imeAction: ImeAction,
+    leadingIcon: ImageVector,
+    modifier: Modifier = Modifier,
+    isValid: Boolean = true,
+    errorMessage: String = "",
+    isEnabled: Boolean = true,
+    onIconClick: () -> Unit = {},
+    visualTransformation: VisualTransformation = VisualTransformation.None
+) {
+    OutlinedTextField(
+        value = value,
+        label = label,
+        onValueChange = onValueChange,
+        shape = CircleShape,
+        singleLine = true,
+        leadingIcon = {
+            Icon(
+                imageVector = leadingIcon,
+                contentDescription = null,
+                modifier = Modifier
+                    .padding(start = 4.dp)
+                    .clickable { onIconClick() }
+            )
+        },
+        keyboardOptions = KeyboardOptions(
+            imeAction = imeAction
+        ),
+        isError = !isValid,
+        supportingText = if (!isValid) {
+            {
+                Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = errorMessage,
+                    color = MaterialTheme.colorScheme.error
+                )
+            }
+        } else {
+            null
+        },
+        enabled = isEnabled,
+        visualTransformation = visualTransformation,
+        modifier = modifier
+    )
+}
+
+@Composable
+fun PasswordTextField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    label: @Composable (() -> Unit)?,
+    imeAction: ImeAction,
+    modifier: Modifier = Modifier,
+    isValid: Boolean = true,
+    errorMessage: String = ""
+) {
+    OutlinedTextField(
+        value = value,
+        label = label,
+        onValueChange = onValueChange,
+        shape = CircleShape,
+        singleLine = true,
+        leadingIcon = {
+            Icon(
+                imageVector = Icons.Filled.Lock,
+                contentDescription = null,
+                modifier = Modifier.padding(start = 4.dp)
+            )
+        },
+        visualTransformation = PasswordVisualTransformation(),
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Password,
+            imeAction = imeAction
+        ),
+        isError = !isValid,
+        supportingText = if (!isValid) {
+            {
+                Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = errorMessage,
+                    color = MaterialTheme.colorScheme.error
+                )
+            }
+        } else {
+            null
+        },
+        modifier = modifier
+    )
+}
+
+@Composable
+fun DatePicker(
+    label: String,
+    value: String,
+    modifier: Modifier = Modifier,
+    onValueChange: (String) -> Unit = {},
+    imeAction: ImeAction = ImeAction.Default,
+    pattern: String = "dd-MM-yyyy",
+) {
+    val formatter = DateTimeFormatter.ofPattern(pattern)
+    val date = if (value.isNotBlank()) LocalDate.parse(value, formatter) else LocalDate.now()
+    val dialog = DatePickerDialog(
+        LocalContext.current,
+        { _, year, month, dayOfMonth ->
+            onValueChange(LocalDate.of(year, month + 1, dayOfMonth).toString())
+        },
+        date.year,
+        date.monthValue - 1,
+        date.dayOfMonth,
+    )
+
+    CommonTextField(
+        value = value,
+        onValueChange = onValueChange,
+        label = { Text(label) },
+        imeAction = imeAction,
+        leadingIcon = Icons.Default.DateRange,
+        modifier = modifier
+    )
+}

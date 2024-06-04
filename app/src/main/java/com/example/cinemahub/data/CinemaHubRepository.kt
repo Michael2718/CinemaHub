@@ -1,10 +1,13 @@
 package com.example.cinemahub.data
 
 import com.example.cinemahub.PreferenceManagerSingleton
+import com.example.cinemahub.model.api.favorite.FavoriteRequest
 import com.example.cinemahub.model.api.favorite.FavoriteResponse
 import com.example.cinemahub.model.api.history.HistoryResponse
 import com.example.cinemahub.model.api.movie.Movie
 import com.example.cinemahub.model.api.movie.MovieSearchResponse
+import com.example.cinemahub.model.api.signIn.SignInRequest
+import com.example.cinemahub.model.api.signUp.SignUpRequest
 import com.example.cinemahub.model.api.user.Token
 import com.example.cinemahub.model.api.user.User
 import com.example.cinemahub.network.CinemaHubApiService
@@ -45,7 +48,8 @@ interface CinemaHubRepository {
     suspend fun getUserById(userId: Int): User
     suspend fun getUserByUsername(username: String): User
 
-    suspend fun login(username: String, password: String): Token
+    suspend fun signIn(signInRequest: SignInRequest): Token
+    suspend fun signUp(signUpRequest: SignUpRequest): Token
 }
 
 
@@ -130,7 +134,7 @@ class NetworkCinemaHubRepository(
 
     override suspend fun addFavorite(userId: Int, movieId: String): Boolean {
         return try {
-            cinemaHubApiService.addFavorite(userId, movieId, getHeader())
+            cinemaHubApiService.addFavorite(FavoriteRequest(userId, movieId), getHeader())
             true
         } catch (e: Exception) {
             false
@@ -152,8 +156,12 @@ class NetworkCinemaHubRepository(
         )
     }
 
-    override suspend fun login(username: String, password: String): Token {
-        return cinemaHubApiService.login(mapOf("username" to username, "password" to password))
+    override suspend fun signIn(signInRequest: SignInRequest): Token {
+        return cinemaHubApiService.signIn(signInRequest)
+    }
+
+    override suspend fun signUp(signUpRequest: SignUpRequest): Token {
+        return cinemaHubApiService.signUp(signUpRequest)
     }
 }
 

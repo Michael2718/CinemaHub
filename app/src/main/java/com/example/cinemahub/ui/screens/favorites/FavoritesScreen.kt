@@ -41,7 +41,7 @@ import kotlinx.coroutines.delay
 @Composable
 fun FavoritesScreen(
     modifier: Modifier = Modifier,
-    viewModel: FavoritesViewModel = hiltViewModel()
+    viewModel: FavoritesViewModel
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val pullRefreshState = rememberPullToRefreshState()

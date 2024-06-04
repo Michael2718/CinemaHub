@@ -15,6 +15,8 @@ import com.example.cinemahub.ui.screens.main.MainViewModel
 import com.example.cinemahub.ui.screens.signin.SignInScreen
 import com.example.cinemahub.ui.screens.signin.SignInViewModel
 import com.example.cinemahub.ui.screens.signin.SignInWelcomeScreen
+import com.example.cinemahub.ui.screens.signup.SignUpScreen
+import com.example.cinemahub.ui.screens.signup.SignUpViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -46,9 +48,6 @@ fun RootAppNavigation(
             } else {
                 SignInScreen(
                     viewModel = viewModel,
-                    onBack = {
-
-                    },
                     onUsernameChange = {
                         viewModel.updateUsername(it)
                     },
@@ -57,14 +56,37 @@ fun RootAppNavigation(
                     },
                     onLoginClick = {
                         coroutineScope.launch {
-                            val loginSuccessful = viewModel.login()
+                            val loginSuccessful = viewModel.signIn()
                             if (loginSuccessful) {
                                 navController.navigate(Routes.Main.route)
                             }
                         }
-                    }
+                    },
+                    onSignUpClick = {
+                        navController.navigate(Routes.SignUp.route)
+                    },
                 )
             }
+        }
+
+        composable(Routes.SignUp.route) {
+            val viewModel: SignUpViewModel = hiltViewModel()
+
+            val coroutineScope = rememberCoroutineScope()
+            SignUpScreen(
+                viewModel = viewModel,
+                onSignUpClick = {
+                    coroutineScope.launch {
+                        val signInSuccessful = viewModel.signUp()
+                        if (signInSuccessful) {
+                            navController.navigate(Routes.Main.route)
+                        }
+                    }
+                },
+                onBack = {
+                    navController.navigateUp()
+                }
+            )
         }
 
         composable(Routes.Main.route) {

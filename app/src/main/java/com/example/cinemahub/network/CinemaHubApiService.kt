@@ -1,10 +1,13 @@
 package com.example.cinemahub.network
 
+import com.example.cinemahub.model.api.favorite.FavoriteRequest
 import com.example.cinemahub.model.api.favorite.FavoriteResponse
 import com.example.cinemahub.model.api.history.HistoryResponse
 import com.example.cinemahub.model.api.movie.Movie
 import com.example.cinemahub.model.api.movie.MovieSearchResponse
 import com.example.cinemahub.model.api.movie.MoviesResponse
+import com.example.cinemahub.model.api.signIn.SignInRequest
+import com.example.cinemahub.model.api.signUp.SignUpRequest
 import com.example.cinemahub.model.api.user.Token
 import com.example.cinemahub.model.api.user.User
 import kotlinx.datetime.LocalDate
@@ -69,8 +72,7 @@ interface CinemaHubApiService {
 
     @POST("favorites")
     suspend fun addFavorite(
-        @Query("userId") userId: Int?,
-        @Query("movieId") movieId: String?,
+        @Body favoriteRequest: FavoriteRequest,
         @Header("Authorization") authHeader: String
     )
 
@@ -98,6 +100,9 @@ interface CinemaHubApiService {
         @Header("Authorization") authHeader: String
     ): User
 
-    @POST("login")
-    suspend fun login(@Body credentials: Map<String, String>): Token
+    @POST("signin")
+    suspend fun signIn(@Body credentials: SignInRequest): Token
+
+    @POST("signup")
+    suspend fun signUp(@Body signUpRequest: SignUpRequest): Token
 }

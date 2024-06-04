@@ -12,6 +12,12 @@ data class Favorite(
 )
 
 @Serializable
+data class FavoriteRequest(
+    val userId: Int,
+    val movieId: String
+)
+
+@Serializable
 data class FavoriteResponse(
     val movie: Movie,
     val addedDate: LocalDate
