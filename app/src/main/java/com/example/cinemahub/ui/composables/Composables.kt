@@ -1,6 +1,5 @@
 package com.example.cinemahub.ui.composables
 
-import android.app.DatePickerDialog
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -15,11 +14,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
@@ -51,8 +47,6 @@ import coil.request.ImageRequest
 import com.example.cinemahub.R
 import com.example.cinemahub.model.api.movie.Movie
 import com.example.cinemahub.model.api.movie.MovieSearchResponse
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 
 @Composable
 fun LoadingScreen(modifier: Modifier = Modifier) {
@@ -478,37 +472,6 @@ fun PasswordTextField(
         } else {
             null
         },
-        modifier = modifier
-    )
-}
-
-@Composable
-fun DatePicker(
-    label: String,
-    value: String,
-    modifier: Modifier = Modifier,
-    onValueChange: (String) -> Unit = {},
-    imeAction: ImeAction = ImeAction.Default,
-    pattern: String = "dd-MM-yyyy",
-) {
-    val formatter = DateTimeFormatter.ofPattern(pattern)
-    val date = if (value.isNotBlank()) LocalDate.parse(value, formatter) else LocalDate.now()
-    val dialog = DatePickerDialog(
-        LocalContext.current,
-        { _, year, month, dayOfMonth ->
-            onValueChange(LocalDate.of(year, month + 1, dayOfMonth).toString())
-        },
-        date.year,
-        date.monthValue - 1,
-        date.dayOfMonth,
-    )
-
-    CommonTextField(
-        value = value,
-        onValueChange = onValueChange,
-        label = { Text(label) },
-        imeAction = imeAction,
-        leadingIcon = Icons.Default.DateRange,
         modifier = modifier
     )
 }

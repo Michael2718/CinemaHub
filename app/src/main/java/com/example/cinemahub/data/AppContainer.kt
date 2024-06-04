@@ -18,7 +18,9 @@ interface AppContainer {
 @InstallIn(SingletonComponent::class)
 class DefaultAppContainer : AppContainer {
 
+//    private val baseUrl = "http://192.168.0.142:8080/"
     private val baseUrl = "http://192.168.0.104:8080/"
+//    private val baseUrl = "http://192.168.22.139:8080"
 
     private val json = Json {
         ignoreUnknownKeys = true
