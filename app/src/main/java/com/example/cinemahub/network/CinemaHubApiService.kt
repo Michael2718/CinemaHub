@@ -34,6 +34,13 @@ interface CinemaHubApiService {
         @Header("Authorization") authHeader: String
     ): Movie
 
+    @GET("movie/{movieId}/{userId}")
+    suspend fun getMovieByUserId(
+        @Path("movieId") movieId: String,
+        @Path("userId") userId: Int,
+        @Header("Authorization") authHeader: String
+    ): MovieSearchResponse
+
     @GET("search")
     suspend fun searchMovies(
         @Query("query") query: String?,
@@ -123,4 +130,28 @@ interface CinemaHubApiService {
         @Path("movieId") movieId: String,
         @Header("Authorization") authHeader: String
     ): List<ReviewResponse>
+
+    @GET("reviews/{movieId}/{userId}")
+    suspend fun getReview(
+        @Path("movieId") movieId: String,
+        @Path("userId") userId: Int,
+        @Header("Authorization") authHeader: String
+    ): ReviewResponse?
+
+    @POST("reviews/{movieId}/{userId}")
+    suspend fun addReview(
+        @Path("movieId") movieId: String,
+        @Path("userId") userId: Int,
+        @Query("vote") vote: Int,
+        @Query("comment") comment: String,
+        @Header("Authorization") authHeader: String
+    ): ReviewResponse?
+
+    @POST("reviews/{movieId}/{userId}/rate")
+    suspend fun rateReview(
+        @Path("movieId") movieId: String,
+        @Path("userId") userId: Int,
+        @Query("like") like: Boolean,
+        @Header("Authorization") authHeader: String
+    )
 }

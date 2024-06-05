@@ -19,10 +19,7 @@ class FavoritesViewModel @Inject constructor(
     private val repository: CinemaHubRepository
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(
-        FavoritesScreenUiState(
-            favoritesRequestStatus = RequestStatus.Loading(),
-            userId = PreferenceManagerSingleton.getUserId()
-        )
+        FavoritesScreenUiState()
     )
 
     val uiState: StateFlow<FavoritesScreenUiState> = _uiState
@@ -60,6 +57,6 @@ class FavoritesViewModel @Inject constructor(
 }
 
 data class FavoritesScreenUiState(
-    val favoritesRequestStatus: FavoritesRequestStatus,
-    val userId: Int
+    val favoritesRequestStatus: FavoritesRequestStatus = RequestStatus.Loading(),
+    val userId: Int = PreferenceManagerSingleton.getUserId()
 )

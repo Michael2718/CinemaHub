@@ -6,6 +6,7 @@ import com.example.cinemahub.model.api.favorite.FavoriteResponse
 import com.example.cinemahub.model.api.history.HistoryResponse
 import com.example.cinemahub.model.api.movie.Movie
 import com.example.cinemahub.model.api.movie.MovieSearchResponse
+import com.example.cinemahub.model.api.review.AddReviewRequest
 import com.example.cinemahub.model.api.review.ReviewResponse
 import com.example.cinemahub.model.api.signIn.SignInRequest
 import com.example.cinemahub.model.api.signUp.SignUpRequest
@@ -26,6 +27,7 @@ interface CinemaHubRepository {
 
     suspend fun getAllMovies(): List<Movie>
     suspend fun getMovieById(movieId: String): Movie
+    suspend fun getMovieByUserId(movieId: String, userId: Int): MovieSearchResponse
     suspend fun searchMovies(
         query: String?,
         minVoteAverage: Double? = null,
@@ -55,6 +57,9 @@ interface CinemaHubRepository {
     suspend fun signUp(signUpRequest: SignUpRequest): Token
 
     suspend fun getReviewsByMovieId(movieId: String): List<ReviewResponse>
+    suspend fun getReview(movieId: String, userId: Int): ReviewResponse?
+    suspend fun rateReview(movieId: String, userId: Int, like: Boolean): Boolean
+    suspend fun addReview(addReviewRequest: AddReviewRequest): ReviewResponse?
 }
 
 
@@ -83,6 +88,10 @@ class NetworkCinemaHubRepository(
 
     override suspend fun getMovieById(movieId: String): Movie {
         return cinemaHubApiService.getMovieById(movieId = movieId, authHeader = getHeader())
+    }
+
+    override suspend fun getMovieByUserId(movieId: String, userId: Int): MovieSearchResponse {
+        return cinemaHubApiService.getMovieByUserId(movieId, userId, getHeader())
     }
 
     override suspend fun searchMovies(
@@ -175,6 +184,39 @@ class NetworkCinemaHubRepository(
 
     override suspend fun getReviewsByMovieId(movieId: String): List<ReviewResponse> {
         return cinemaHubApiService.getReviewsByMovieId(movieId, getHeader())
+    }
+
+    override suspend fun getReview(movieId: String, userId: Int): ReviewResponse? {
+        return try {
+            cinemaHubApiService.getReview(movieId, userId, getHeader())
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    override suspend fun rateReview(movieId: String, userId: Int, like: Boolean): Boolean {
+        try {
+            cinemaHubApiService.rateReview(movieId, userId, like, getHeader())
+            return true
+        } catch (e: Exception) {
+            return false
+        }
+    }
+
+    override suspend fun addReview(
+        addReviewRequest: AddReviewRequest
+    ): ReviewResponse? {
+        return try {
+            cinemaHubApiService.addReview(
+                addReviewRequest.movieId,
+                addReviewRequest.userId,
+                addReviewRequest.vote,
+                addReviewRequest.comment,
+                getHeader()
+            )
+        } catch (e: Exception) {
+            null
+        }
     }
 }
 
