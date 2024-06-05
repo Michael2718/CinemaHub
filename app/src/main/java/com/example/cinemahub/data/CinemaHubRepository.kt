@@ -6,6 +6,7 @@ import com.example.cinemahub.model.api.favorite.FavoriteResponse
 import com.example.cinemahub.model.api.history.HistoryResponse
 import com.example.cinemahub.model.api.movie.Movie
 import com.example.cinemahub.model.api.movie.MovieSearchResponse
+import com.example.cinemahub.model.api.review.ReviewResponse
 import com.example.cinemahub.model.api.signIn.SignInRequest
 import com.example.cinemahub.model.api.signUp.SignUpRequest
 import com.example.cinemahub.model.api.user.Token
@@ -52,6 +53,8 @@ interface CinemaHubRepository {
 
     suspend fun signIn(signInRequest: SignInRequest): Token
     suspend fun signUp(signUpRequest: SignUpRequest): Token
+
+    suspend fun getReviewsByMovieId(movieId: String): List<ReviewResponse>
 }
 
 
@@ -168,6 +171,10 @@ class NetworkCinemaHubRepository(
 
     override suspend fun signUp(signUpRequest: SignUpRequest): Token {
         return cinemaHubApiService.signUp(signUpRequest)
+    }
+
+    override suspend fun getReviewsByMovieId(movieId: String): List<ReviewResponse> {
+        return cinemaHubApiService.getReviewsByMovieId(movieId, getHeader())
     }
 }
 

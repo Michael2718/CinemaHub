@@ -56,6 +56,7 @@ import kotlinx.coroutines.delay
 fun SearchScreen(
     viewModel: SearchViewModel,
     onFilter: () -> Unit,
+    onMovieClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -144,6 +145,8 @@ fun SearchScreen(
 //                viewModel.search()
                 pullRefreshState.startRefresh()
             },
+
+            onMovieClick = onMovieClick,
             modifier = Modifier
                 .padding(innerPadding)
                 .padding(
@@ -163,6 +166,7 @@ fun SearchScreenContent(
     pullRefreshState: PullToRefreshState,
     onRefresh: () -> Unit,
     onFavoriteClick: (String, Boolean) -> Unit,
+    onMovieClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     if (pullRefreshState.isRefreshing) {
@@ -221,9 +225,7 @@ fun SearchScreenContent(
                                 movie = movie,
                                 supportingText = "Price: ${movie.price}",
                                 onFavoriteClick = onFavoriteClick,
-                                onMovieClick = {
-
-                                },
+                                onMovieClick = onMovieClick,
                                 modifier = Modifier
                                     .padding(vertical = 8.dp)
                             )

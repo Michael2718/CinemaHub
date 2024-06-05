@@ -30,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
+import com.example.cinemahub.model.api.movie.Movie
 import com.example.cinemahub.network.RequestStatus
 import com.example.cinemahub.ui.composables.ErrorScreen
 import com.example.cinemahub.ui.composables.LoadingScreen
@@ -40,7 +41,8 @@ import kotlinx.coroutines.delay
 @Composable
 fun FavoritesScreen(
     modifier: Modifier = Modifier,
-    viewModel: FavoritesViewModel
+    viewModel: FavoritesViewModel,
+    onMovieClick: (String) -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val pullRefreshState = rememberPullToRefreshState()
@@ -89,6 +91,7 @@ fun FavoritesScreen(
             onFavoriteClick = { movieId ->
                 viewModel.deleteFavorite(movieId)
             },
+            onMovieClick = onMovieClick,
             modifier = Modifier
                 .padding(it)
                 .padding(
@@ -108,6 +111,7 @@ fun FavoritesScreenContent(
     pullRefreshState: PullToRefreshState,
     onRefresh: () -> Unit,
     onFavoriteClick: (String) -> Unit,
+    onMovieClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -171,9 +175,7 @@ fun FavoritesScreenContent(
                                 supportingText = "Added to the list on ${favorite.addedDate}",
                                 isFavorite = true,
                                 onFavoriteClick = onFavoriteClick,
-                                onMovieClick = {
-
-                                },
+                                onMovieClick = onMovieClick,
                                 modifier = Modifier.padding(vertical = 8.dp)
                             )
                         }

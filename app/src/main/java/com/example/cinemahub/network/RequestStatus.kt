@@ -3,6 +3,7 @@ package com.example.cinemahub.network
 import com.example.cinemahub.model.api.favorite.FavoriteResponse
 import com.example.cinemahub.model.api.movie.Movie
 import com.example.cinemahub.model.api.movie.MovieSearchResponse
+import com.example.cinemahub.model.api.review.ReviewResponse
 import com.example.cinemahub.model.api.user.Token
 import com.example.cinemahub.model.api.user.User
 
@@ -17,6 +18,8 @@ sealed interface RequestStatus<T> {
 }
 
 typealias MoviesRequestStatus = RequestStatus<List<Movie>>
+typealias MovieRequestStatus = RequestStatus<Movie>
+typealias ReviewsRequestStatus = RequestStatus<List<ReviewResponse>>
 typealias UserRequestStatus = RequestStatus<User>
 typealias UpdateUserRequestStatus = RequestStatus<User>
 typealias TokenRequestStatus = RequestStatus<Token>

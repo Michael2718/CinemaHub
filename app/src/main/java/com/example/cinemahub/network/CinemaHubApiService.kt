@@ -6,6 +6,7 @@ import com.example.cinemahub.model.api.history.HistoryResponse
 import com.example.cinemahub.model.api.movie.Movie
 import com.example.cinemahub.model.api.movie.MovieSearchResponse
 import com.example.cinemahub.model.api.movie.MoviesResponse
+import com.example.cinemahub.model.api.review.ReviewResponse
 import com.example.cinemahub.model.api.signIn.SignInRequest
 import com.example.cinemahub.model.api.signUp.SignUpRequest
 import com.example.cinemahub.model.api.user.Token
@@ -113,4 +114,13 @@ interface CinemaHubApiService {
 
     @POST("signup")
     suspend fun signUp(@Body signUpRequest: SignUpRequest): Token
+
+    /*
+    * Reviews
+    * */
+    @GET("reviews/{movieId}")
+    suspend fun getReviewsByMovieId(
+        @Path("movieId") movieId: String,
+        @Header("Authorization") authHeader: String
+    ): List<ReviewResponse>
 }

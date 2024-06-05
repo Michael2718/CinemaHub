@@ -1,5 +1,8 @@
 package com.example.cinemahub.navigation
 
+import com.example.cinemahub.model.api.movie.Movie
+import kotlinx.serialization.Serializable
+
 sealed class Routes(val route: String) {
     data object Splash : Routes("splash")
     data object Welcome : Routes("welcome")
@@ -24,3 +27,7 @@ sealed class Routes(val route: String) {
     data object Profile : Routes("profile")
 }
 
+@Serializable
+data class MovieDetails(
+    val movieId: String
+)

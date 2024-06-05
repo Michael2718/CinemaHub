@@ -1,5 +1,6 @@
 package com.example.cinemahub.ui.composables
 
+import android.content.Context
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -7,6 +8,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -32,6 +34,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -87,13 +90,13 @@ fun MovieListItemCompact(
     supportingText: String,
     isFavorite: Boolean,
     onFavoriteClick: (String) -> Unit,
-    onMovieClick: (Movie) -> Unit,
+    onMovieClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .clickable { onMovieClick(movie) },
+            .clickable { onMovieClick(movie.movieId) },
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         shape = RoundedCornerShape(8.dp)
     ) {
@@ -141,7 +144,7 @@ fun MovieListItemCompact(
             ) {
                 Text(
                     text = "⭐${
-                        "%.${2}f".format(movie.voteAverage).toDouble()
+                        "%.${1}f".format(movie.voteAverage)
                     }",
                     style = MaterialTheme.typography.titleMedium,
                     maxLines = 1,
@@ -474,4 +477,43 @@ fun PasswordTextField(
         },
         modifier = modifier
     )
+}
+
+@Composable
+fun ImageCard(
+    imageLink: String?,
+    context: Context,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier,
+        shape = RectangleShape,
+//        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        if (imageLink == null) {
+            Image(
+                painter = painterResource(R.drawable.broken_image_24),
+                contentDescription = null,
+                modifier = Modifier
+                    .fillMaxHeight(),
+                alignment = Alignment.Center,
+                contentScale = ContentScale.FillHeight
+            )
+        } else {
+            AsyncImage(
+                model = ImageRequest.Builder(context = context)
+                    .data(imageLink)
+                    .crossfade(true)
+                    .build(),
+                contentDescription = null,
+                modifier = Modifier
+                    .fillMaxHeight(),
+                placeholder = painterResource(R.drawable.loading_24),
+                error = painterResource(R.drawable.broken_image_24),
+                alignment = Alignment.Center,
+                contentScale = ContentScale.Fit
+            )
+        }
+    }
 }
