@@ -30,7 +30,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
-import com.example.cinemahub.model.api.movie.Movie
 import com.example.cinemahub.network.RequestStatus
 import com.example.cinemahub.ui.composables.ErrorScreen
 import com.example.cinemahub.ui.composables.LoadingScreen

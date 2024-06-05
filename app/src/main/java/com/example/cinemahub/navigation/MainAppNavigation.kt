@@ -10,7 +10,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
-import androidx.navigation.toRoute
 import com.example.cinemahub.ui.screens.favorites.FavoritesScreen
 import com.example.cinemahub.ui.screens.favorites.FavoritesViewModel
 import com.example.cinemahub.ui.screens.home.HomeScreen

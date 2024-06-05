@@ -202,7 +202,6 @@ fun MovieDetails(
                         fontWeight = FontWeight.SemiBold
                     )
                     Text(
-                        // TODO: add toDouble for deploying
                         text = "⭐${"%.${1}f".format(movie.voteAverage)} (${movie.voteCount} votes)",
                         fontWeight = FontWeight.SemiBold
                     )

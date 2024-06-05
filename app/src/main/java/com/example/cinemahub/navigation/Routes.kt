@@ -1,6 +1,5 @@
 package com.example.cinemahub.navigation
 
-import com.example.cinemahub.model.api.movie.Movie
 import kotlinx.serialization.Serializable
 
 sealed class Routes(val route: String) {
