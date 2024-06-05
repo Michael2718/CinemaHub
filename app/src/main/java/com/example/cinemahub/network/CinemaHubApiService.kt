@@ -9,6 +9,7 @@ import com.example.cinemahub.model.api.movie.MoviesResponse
 import com.example.cinemahub.model.api.signIn.SignInRequest
 import com.example.cinemahub.model.api.signUp.SignUpRequest
 import com.example.cinemahub.model.api.user.Token
+import com.example.cinemahub.model.api.user.UpdateUserRequest
 import com.example.cinemahub.model.api.user.User
 import kotlinx.datetime.LocalDate
 import retrofit2.http.Body
@@ -97,6 +98,13 @@ interface CinemaHubApiService {
     @GET("user")
     suspend fun getUserByUsername(
         @Query("username") username: String,
+        @Header("Authorization") authHeader: String
+    ): User
+
+    @POST("user/{userId}")
+    suspend fun updateUser(
+        @Path("userId") userId: Int,
+        @Body updateUserRequestStatus: UpdateUserRequest,
         @Header("Authorization") authHeader: String
     ): User
 

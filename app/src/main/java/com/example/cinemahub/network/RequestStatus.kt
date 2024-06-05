@@ -18,6 +18,7 @@ sealed interface RequestStatus<T> {
 
 typealias MoviesRequestStatus = RequestStatus<List<Movie>>
 typealias UserRequestStatus = RequestStatus<User>
+typealias UpdateUserRequestStatus = RequestStatus<User>
 typealias TokenRequestStatus = RequestStatus<Token>
 typealias FavoritesRequestStatus = RequestStatus<List<FavoriteResponse>>
 typealias SearchRequestStatus = RequestStatus<List<MovieSearchResponse>>

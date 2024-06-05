@@ -173,23 +173,7 @@ fun SignUpForm(
             modifier = Modifier.fillMaxWidth()
         )
 
-
-//        val datePickerState = rememberDatePickerState(initialSelectedDateMillis = 1578096000000)
-//        DatePicker(
-//            state = datePickerState,
-//            modifier = Modifier.padding(16.dp)
-//        )
-//        DatePicker(
-//            label = "Birthdate",
-//            value = uiState.birthdate,
-//            onValueChange = {
-//                viewModel.updateBirthdate(it)
-//            },
-//            imeAction = ImeAction.Done,
-//            modifier = Modifier.fillMaxWidth()
-//        )
         var dialogOpened by remember { mutableStateOf(false) }
-//        var dateResult by remember { mutableStateOf("") }
 
         CommonTextField(
             value = uiState.birthdate,
@@ -207,7 +191,6 @@ fun SignUpForm(
 
         if (dialogOpened) {
             val datePickerState = rememberDatePickerState(initialDisplayMode = DisplayMode.Input)
-//            val state = rememberDatePickerState(initialDisplayMode = DisplayMode.Input)
             val confirmEnabled = remember { true }
             DatePickerDialog(
                 onDismissRequest = { dialogOpened = false },
@@ -374,58 +357,3 @@ fun ContentDatePickerPopup() {
         )
     }
 }
-
-//internal data class DateInputFormat(
-//    val patternWithDelimiters: String,
-//    val delimiter: Char
-//) {
-//    val patternWithoutDelimiters: String = patternWithDelimiters.replace(delimiter.toString(), "")
-//}
-//
-//private class DateVisualTransformation(private val dateInputFormat: DateInputFormat) :
-//    VisualTransformation {
-//
-//    private val firstDelimiterOffset: Int =
-//        dateInputFormat.patternWithDelimiters.indexOf(dateInputFormat.delimiter)
-//    private val secondDelimiterOffset: Int =
-//        dateInputFormat.patternWithDelimiters.lastIndexOf(dateInputFormat.delimiter)
-//    private val dateFormatLength: Int = dateInputFormat.patternWithoutDelimiters.length
-//
-//    private val dateOffsetTranslator = object : OffsetMapping {
-//
-//        override fun originalToTransformed(offset: Int): Int {
-//            return when {
-//                offset < firstDelimiterOffset -> offset
-//                offset < secondDelimiterOffset -> offset + 1
-//                offset <= dateFormatLength -> offset + 2
-//                else -> dateFormatLength + 2 // 10
-//            }
-//        }
-//
-//        override fun transformedToOriginal(offset: Int): Int {
-//            return when {
-//                offset <= firstDelimiterOffset - 1 -> offset
-//                offset <= secondDelimiterOffset - 1 -> offset - 1
-//                offset <= dateFormatLength + 1 -> offset - 2
-//                else -> dateFormatLength // 8
-//            }
-//        }
-//    }
-//
-//    override fun filter(text: AnnotatedString): TransformedText {
-//        val trimmedText =
-//            if (text.text.length > dateFormatLength) {
-//                text.text.substring(0 until dateFormatLength)
-//            } else {
-//                text.text
-//            }
-//        var transformedText = ""
-//        trimmedText.forEachIndexed { index, char ->
-//            transformedText += char
-//            if (index + 1 == firstDelimiterOffset || index + 2 == secondDelimiterOffset) {
-//                transformedText += dateInputFormat.delimiter
-//            }
-//        }
-//        return TransformedText(AnnotatedString(transformedText), dateOffsetTranslator)
-//    }
-//}

@@ -11,5 +11,13 @@ data class User(
     val lastName: String,
     val email: String,
     val phoneNumber: String,
-    val birthDate: LocalDate,
+    val birthDate: LocalDate
+)
+
+@Serializable
+data class UpdateUserRequest(
+    val username: String,
+    val firstName: String,
+    val lastName: String,
+    val email: String
 )

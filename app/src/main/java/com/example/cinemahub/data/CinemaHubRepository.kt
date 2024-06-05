@@ -9,6 +9,7 @@ import com.example.cinemahub.model.api.movie.MovieSearchResponse
 import com.example.cinemahub.model.api.signIn.SignInRequest
 import com.example.cinemahub.model.api.signUp.SignUpRequest
 import com.example.cinemahub.model.api.user.Token
+import com.example.cinemahub.model.api.user.UpdateUserRequest
 import com.example.cinemahub.model.api.user.User
 import com.example.cinemahub.network.CinemaHubApiService
 import kotlinx.coroutines.Dispatchers
@@ -47,6 +48,7 @@ interface CinemaHubRepository {
 
     suspend fun getUserById(userId: Int): User
     suspend fun getUserByUsername(username: String): User
+    suspend fun updateUser(userId: Int, updateUserRequest: UpdateUserRequest): User
 
     suspend fun signIn(signInRequest: SignInRequest): Token
     suspend fun signUp(signUpRequest: SignUpRequest): Token
@@ -154,6 +156,10 @@ class NetworkCinemaHubRepository(
             username = username,
             authHeader = getHeader()
         )
+    }
+
+    override suspend fun updateUser(userId: Int, updateUserRequest: UpdateUserRequest): User {
+        return cinemaHubApiService.updateUser(userId, updateUserRequest, getHeader())
     }
 
     override suspend fun signIn(signInRequest: SignInRequest): Token {
