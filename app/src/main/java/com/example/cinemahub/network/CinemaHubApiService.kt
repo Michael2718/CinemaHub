@@ -4,11 +4,13 @@ import com.example.cinemahub.model.api.favorite.FavoriteRequest
 import com.example.cinemahub.model.api.favorite.FavoriteResponse
 import com.example.cinemahub.model.api.history.HistoryResponse
 import com.example.cinemahub.model.api.movie.Movie
+import com.example.cinemahub.model.api.movie.MovieDetailsResponse
 import com.example.cinemahub.model.api.movie.MovieSearchResponse
 import com.example.cinemahub.model.api.movie.MoviesResponse
 import com.example.cinemahub.model.api.review.ReviewResponse
 import com.example.cinemahub.model.api.signIn.SignInRequest
 import com.example.cinemahub.model.api.signUp.SignUpRequest
+import com.example.cinemahub.model.api.transaction.Transaction
 import com.example.cinemahub.model.api.user.Token
 import com.example.cinemahub.model.api.user.UpdateUserRequest
 import com.example.cinemahub.model.api.user.User
@@ -39,7 +41,7 @@ interface CinemaHubApiService {
         @Path("movieId") movieId: String,
         @Path("userId") userId: Int,
         @Header("Authorization") authHeader: String
-    ): MovieSearchResponse
+    ): MovieDetailsResponse
 
     @GET("search")
     suspend fun searchMovies(
@@ -154,4 +156,15 @@ interface CinemaHubApiService {
         @Query("like") like: Boolean,
         @Header("Authorization") authHeader: String
     )
+
+    /*
+    * Transaction
+    * */
+    @POST("transaction/{movieId}/{userId}/{paymentMethod}")
+    suspend fun buyMovie(
+        @Path("movieId") movieId: String,
+        @Path("userId") userId: Int,
+        @Query("paymentMethod") paymentMethod: Int,
+        @Header("Authorization") authHeader: String
+    ): Transaction?
 }

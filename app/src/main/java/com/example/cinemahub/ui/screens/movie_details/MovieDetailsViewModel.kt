@@ -159,6 +159,24 @@ class MovieDetailsViewModel @Inject constructor(
             }
         }
     }
+
+    fun onBuyClick(
+        movieId: String = uiState.value.movieId,
+        userId: Int = uiState.value.userId
+    ) {
+//        _uiState.update {
+//            it.copy(
+//                transactionRequestStatus = RequestStatus.Loading()
+//            )
+//        }
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.buyMovie(
+                movieId = movieId,
+                userId = userId,
+                paymentMethod = 1
+            )
+        }
+    }
 }
 
 data class MovieDetailsUiState(
@@ -166,5 +184,6 @@ data class MovieDetailsUiState(
     val userId: Int = PreferenceManagerSingleton.getUserId(),
     val movieRequestStatus: MovieRequestStatus = RequestStatus.Loading(),
     val reviewsRequestStatus: ReviewsRequestStatus = RequestStatus.Loading(),
-    val userReviewRequestStatus: UserReviewRequestStatus = RequestStatus.Loading()
+    val userReviewRequestStatus: UserReviewRequestStatus = RequestStatus.Loading(),
+//    val transactionRequestStatus: TransactionRequestStatus = RequestStatus.Loading()
 )

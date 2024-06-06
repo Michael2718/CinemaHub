@@ -5,11 +5,13 @@ import com.example.cinemahub.model.api.favorite.FavoriteRequest
 import com.example.cinemahub.model.api.favorite.FavoriteResponse
 import com.example.cinemahub.model.api.history.HistoryResponse
 import com.example.cinemahub.model.api.movie.Movie
+import com.example.cinemahub.model.api.movie.MovieDetailsResponse
 import com.example.cinemahub.model.api.movie.MovieSearchResponse
 import com.example.cinemahub.model.api.review.AddReviewRequest
 import com.example.cinemahub.model.api.review.ReviewResponse
 import com.example.cinemahub.model.api.signIn.SignInRequest
 import com.example.cinemahub.model.api.signUp.SignUpRequest
+import com.example.cinemahub.model.api.transaction.Transaction
 import com.example.cinemahub.model.api.user.Token
 import com.example.cinemahub.model.api.user.UpdateUserRequest
 import com.example.cinemahub.model.api.user.User
@@ -27,7 +29,7 @@ interface CinemaHubRepository {
 
     suspend fun getAllMovies(): List<Movie>
     suspend fun getMovieById(movieId: String): Movie
-    suspend fun getMovieByUserId(movieId: String, userId: Int): MovieSearchResponse
+    suspend fun getMovieByUserId(movieId: String, userId: Int): MovieDetailsResponse
     suspend fun searchMovies(
         query: String?,
         minVoteAverage: Double? = null,
@@ -60,6 +62,8 @@ interface CinemaHubRepository {
     suspend fun getReview(movieId: String, userId: Int): ReviewResponse?
     suspend fun rateReview(movieId: String, userId: Int, like: Boolean): Boolean
     suspend fun addReview(addReviewRequest: AddReviewRequest): ReviewResponse?
+
+    suspend fun buyMovie(movieId: String, userId: Int, paymentMethod: Int): Transaction?
 }
 
 
@@ -90,7 +94,7 @@ class NetworkCinemaHubRepository(
         return cinemaHubApiService.getMovieById(movieId = movieId, authHeader = getHeader())
     }
 
-    override suspend fun getMovieByUserId(movieId: String, userId: Int): MovieSearchResponse {
+    override suspend fun getMovieByUserId(movieId: String, userId: Int): MovieDetailsResponse {
         return cinemaHubApiService.getMovieByUserId(movieId, userId, getHeader())
     }
 
@@ -212,6 +216,19 @@ class NetworkCinemaHubRepository(
                 addReviewRequest.userId,
                 addReviewRequest.vote,
                 addReviewRequest.comment,
+                getHeader()
+            )
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    override suspend fun buyMovie(movieId: String, userId: Int, paymentMethod: Int): Transaction? {
+        return try {
+            cinemaHubApiService.buyMovie(
+                movieId,
+                userId,
+                paymentMethod,
                 getHeader()
             )
         } catch (e: Exception) {

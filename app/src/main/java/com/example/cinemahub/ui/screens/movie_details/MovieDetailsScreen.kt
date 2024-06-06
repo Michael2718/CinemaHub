@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -49,7 +50,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.cinemahub.model.api.movie.MovieSearchResponse
+import com.example.cinemahub.model.api.movie.MovieDetailsResponse
 import com.example.cinemahub.model.api.review.ReviewResponse
 import com.example.cinemahub.network.RequestStatus
 import com.example.cinemahub.network.ReviewsRequestStatus
@@ -59,6 +60,9 @@ import com.example.cinemahub.ui.composables.ImageCard
 import com.example.cinemahub.ui.composables.LoadingScreen
 import com.example.cinemahub.ui.theme.CinemaHubTheme
 import kotlinx.coroutines.delay
+import kotlinx.datetime.LocalDate
+import org.postgresql.util.PGInterval
+import org.postgresql.util.PGmoney
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -111,6 +115,11 @@ fun MovieDetailsScreen(
                 viewModel.onFavoriteClick(it)
                 viewModel.fetchMovie()
             },
+            onBuyClick = {
+                viewModel.onBuyClick()
+                viewModel.fetchMovie()
+                viewModel.fetchReviews()
+            },
             modifier = Modifier
                 .padding(innerPadding)
                 .padding(
@@ -133,6 +142,7 @@ fun MovieDetailsContent(
     onLikeClick: (String, Int) -> Unit,
     onDislikeClick: (String, Int) -> Unit,
     onFavoriteClick: (Boolean) -> Unit,
+    onBuyClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     if (pullRefreshState.isRefreshing) {
@@ -171,7 +181,8 @@ fun MovieDetailsContent(
                     val movie = uiState.movieRequestStatus.data
                     MovieDetails(
                         movie = movie,
-                        onFavoriteClick = onFavoriteClick
+                        onFavoriteClick = onFavoriteClick,
+                        onBuyClick = onBuyClick
                     )
                     Reviews(
                         onSubmit = onSubmit,
@@ -194,8 +205,9 @@ fun MovieDetailsContent(
 
 @Composable
 fun MovieDetails(
-    movie: MovieSearchResponse,
+    movie: MovieDetailsResponse,
     onFavoriteClick: (Boolean) -> Unit,
+    onBuyClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
 //    val scrollState = rememberScrollState()
@@ -241,15 +253,28 @@ fun MovieDetails(
                 }
             }
         )
-        ListItem(
-            headlineContent = {
-//                var isFavorite by remember { mutableStateOf(true) }
+        LazyRow(
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(1) {
+                if (movie.isBought) {
+                    OutlinedButton(
+                        onClick = {}
+                    ) {
+                        Icon(imageVector = Icons.Default.Done, contentDescription = null)
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text("In library")
+                    }
+                } else {
+                    Button(
+                        onClick = onBuyClick
+                    ) {
+                        Text("Buy ${movie.price}")
+                    }
+                }
+            }
+            items(1) {
                 if (movie.isFavorite) {
-//                    IconButton(
-//                        onClick = {}
-//                    ) {
-//                        Icon(imageVector = Icons.Default.Favorite, contentDescription = null)
-//                    }
                     OutlinedButton(
                         onClick = { onFavoriteClick(true) }
                     ) {
@@ -265,7 +290,7 @@ fun MovieDetails(
                     }
                 }
             }
-        )
+        }
 
 
         ListItem(
@@ -273,19 +298,10 @@ fun MovieDetails(
             supportingContent = { Text(movie.plot) }
         )
 
-        Row {
-            ListItem(
-                headlineContent = { Text("Price", fontWeight = FontWeight.SemiBold) },
-                supportingContent = { Text(movie.price.toString()) },
-                modifier = Modifier.weight(1f)
-            )
-
-            ListItem(
-                headlineContent = { Text("Adult", fontWeight = FontWeight.SemiBold) },
-                supportingContent = { Text(if (movie.isAdult) "Yes" else "No") },
-                modifier = Modifier.weight(1f)
-            )
-        }
+        ListItem(
+            headlineContent = { Text("Adult", fontWeight = FontWeight.SemiBold) },
+            supportingContent = { Text(if (movie.isAdult) "Yes" else "No") }
+        )
 
     }
 }
@@ -306,17 +322,19 @@ fun Reviews(
             .fillMaxWidth()
     ) {
         Text("Your review:")
-        when(userReviewRequest) {
+        when (userReviewRequest) {
             is RequestStatus.Error -> {
                 Text("Something went wrong...")
                 Text(userReviewRequest.exception.toString())
             }
+
             is RequestStatus.Loading -> {
                 LoadingScreen(
                     modifier = Modifier
                         .fillMaxSize()
                 )
             }
+
             is RequestStatus.Success -> {
                 if (userReviewRequest.data == null) {
                     AddReview(
@@ -547,20 +565,24 @@ fun AddReview(
 @Composable
 fun MovieDetailsPreview(modifier: Modifier = Modifier) {
     CinemaHubTheme {
-//        MovieDetails(
-//            movie = Movie(
-//                "tt0086190",
-//                "Star Wars: Episode VI - Return of the Jedi",
-//                LocalDate.parse("1983-05-25"),
-//                PGInterval(0, 0, 0, 2, 11, 0.0),
-//                8.3,
-//                1123655,
-//                "After rescuing Han Solo from Jabba the Hutt, the Rebel Alliance attempt to destroy the second Death Star, while Luke struggles to help Darth Vader back from the dark side.",
-//                false,
-//                0,
-//                PGmoney("$9.99"),
-//                "https://m.media-amazon.com/images/M/MV5BOWZlMjFiYzgtMTUzNC00Y2IzLTk1NTMtZmNhMTczNTk0ODk1XkEyXkFqcGdeQXVyNTAyODkwOQ@@._V1_.jpg"
-//            )
-//        )
+        MovieDetails(
+            movie = MovieDetailsResponse(
+                movieId = "tt0086190",
+                title = "Star Wars: Episode VI - Return of the Jedi",
+                releaseDate = LocalDate.parse("1983-05-25"),
+                duration = PGInterval(0, 0, 0, 2, 11, 0.0),
+                voteAverage = 8.3,
+                voteCount = 1123655,
+                plot = "After rescuing Han Solo from Jabba the Hutt, the Rebel Alliance attempt to destroy the second Death Star, while Luke struggles to help Darth Vader back from the dark side.",
+                isAdult = false,
+                popularity = 0,
+                price = PGmoney("$9.99"),
+                primaryImageUrl = "https://m.media-amazon.com/images/M/MV5BOWZlMjFiYzgtMTUzNC00Y2IzLTk1NTMtZmNhMTczNTk0ODk1XkEyXkFqcGdeQXVyNTAyODkwOQ@@._V1_.jpg",
+                isFavorite = true,
+                isBought = false
+            ),
+            onFavoriteClick = {},
+            onBuyClick = {}
+        )
     }
 }
