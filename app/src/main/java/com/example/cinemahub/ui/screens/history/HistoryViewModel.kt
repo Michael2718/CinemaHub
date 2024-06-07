@@ -3,7 +3,6 @@ package com.example.cinemahub.ui.screens.history
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.cinemahub.PreferenceManagerSingleton
 import com.example.cinemahub.data.CinemaHubRepository
 import com.example.cinemahub.network.HistoryRequestStatus
 import com.example.cinemahub.network.RequestStatus

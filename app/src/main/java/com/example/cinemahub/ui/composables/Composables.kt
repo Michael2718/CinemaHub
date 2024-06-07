@@ -2,6 +2,7 @@ package com.example.cinemahub.ui.composables
 
 import android.content.Context
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -485,12 +486,14 @@ fun PasswordTextField(
 fun ImageCard(
     imageLink: String?,
     context: Context,
+    contentScale: ContentScale,
     modifier: Modifier = Modifier
 ) {
     Card(
-        modifier = modifier,
+        modifier = modifier
+            .animateContentSize(),
         shape = RectangleShape,
-//        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         if (imageLink == null) {
@@ -500,7 +503,7 @@ fun ImageCard(
                 modifier = Modifier
                     .fillMaxHeight(),
                 alignment = Alignment.Center,
-                contentScale = ContentScale.FillHeight
+                contentScale = contentScale
             )
         } else {
             AsyncImage(
@@ -514,7 +517,7 @@ fun ImageCard(
                 placeholder = painterResource(R.drawable.loading_24),
                 error = painterResource(R.drawable.broken_image_24),
                 alignment = Alignment.Center,
-                contentScale = ContentScale.Fit
+                contentScale = contentScale
             )
         }
     }

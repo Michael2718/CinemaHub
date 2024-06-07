@@ -45,6 +45,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -219,6 +220,7 @@ fun MovieDetails(
                 ImageCard(
                     imageLink = movie.primaryImageUrl,
                     context = LocalContext.current,
+                    contentScale = ContentScale.Fit,
                     modifier = Modifier
                         .height(320.dp)
                 )

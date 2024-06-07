@@ -64,6 +64,8 @@ interface CinemaHubRepository {
     suspend fun addReview(addReviewRequest: AddReviewRequest): ReviewResponse?
 
     suspend fun buyMovie(movieId: String, userId: Int, paymentMethod: Int): Transaction?
+
+    suspend fun getAllGenresMovies(): Map<String, List<Movie>>?
 }
 
 
@@ -234,6 +236,10 @@ class NetworkCinemaHubRepository(
         } catch (e: Exception) {
             null
         }
+    }
+
+    override suspend fun getAllGenresMovies(): Map<String, List<Movie>>? {
+        return cinemaHubApiService.getAllGenresMovies(getHeader())
     }
 }
 

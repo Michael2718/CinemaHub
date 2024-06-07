@@ -167,4 +167,12 @@ interface CinemaHubApiService {
         @Query("paymentMethod") paymentMethod: Int,
         @Header("Authorization") authHeader: String
     ): Transaction?
+
+    /*
+    * Genres
+    * */
+    @GET("genres/movies")
+    suspend fun getAllGenresMovies(
+        @Header("Authorization") authHeader: String
+    ): Map<String, List<Movie>>?
 }

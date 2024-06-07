@@ -6,7 +6,6 @@ import com.example.cinemahub.model.api.movie.Movie
 import com.example.cinemahub.model.api.movie.MovieDetailsResponse
 import com.example.cinemahub.model.api.movie.MovieSearchResponse
 import com.example.cinemahub.model.api.review.ReviewResponse
-import com.example.cinemahub.model.api.transaction.Transaction
 import com.example.cinemahub.model.api.user.Token
 import com.example.cinemahub.model.api.user.User
 
@@ -20,7 +19,7 @@ sealed interface RequestStatus<T> {
     class Loading<T> : RequestStatus<T>
 }
 
-typealias MoviesRequestStatus = RequestStatus<List<Movie>>
+typealias GenresMoviesRequestStatus = RequestStatus<Map<String, List<Movie>>?>
 typealias MovieRequestStatus = RequestStatus<MovieDetailsResponse>
 
 typealias ReviewsRequestStatus = RequestStatus<List<ReviewResponse>>

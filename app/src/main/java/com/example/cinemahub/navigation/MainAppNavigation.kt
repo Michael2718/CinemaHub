@@ -40,7 +40,7 @@ fun MainAppNavigation(
         startDestination = startDestination
     ) {
         homeGraph(
-//            navController = navController
+            navController = navController
         )
         searchGraph(
             navController = navController,
@@ -64,13 +64,16 @@ fun MainAppNavigation(
 }
 
 fun NavGraphBuilder.homeGraph(
-//    navController: NavHostController
+    navController: NavHostController
 ) {
     navigation(startDestination = Routes.Home.route, route = Routes.HomeGraph.route) {
         composable(Routes.Home.route) {
             val viewModel: HomeViewModel = hiltViewModel()
             HomeScreen(
-                viewModel = viewModel
+                viewModel = viewModel,
+                onMovieClick = {
+                    navController.navigate(MovieDetails(it))
+                }
             )
         }
     }

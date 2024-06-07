@@ -3,7 +3,7 @@ package com.example.cinemahub.ui.screens.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.cinemahub.data.CinemaHubRepository
-import com.example.cinemahub.network.MoviesRequestStatus
+import com.example.cinemahub.network.GenresMoviesRequestStatus
 import com.example.cinemahub.network.RequestStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -18,23 +18,21 @@ class HomeViewModel @Inject constructor(
     private val repository: CinemaHubRepository
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(
-        HomeScreenUiState(
-            moviesRequestStatus = RequestStatus.Loading()
-        )
+        HomeScreenUiState()
     )
 
     val uiState: StateFlow<HomeScreenUiState> = _uiState
 
     init {
-        getAllMovies()
+        fetchAllGenresMovies()
     }
 
-    fun getAllMovies() {
+    fun fetchAllGenresMovies() {
         viewModelScope.launch(Dispatchers.IO) {
             _uiState.update {
                 it.copy(
-                    moviesRequestStatus = try {
-                        RequestStatus.Success(repository.getAllMovies())
+                    genresMoviesRequestStatus = try {
+                        RequestStatus.Success(repository.getAllGenresMovies())
                     } catch (e: Exception) {
                         RequestStatus.Error(e)
                     }
@@ -45,5 +43,5 @@ class HomeViewModel @Inject constructor(
 }
 
 data class HomeScreenUiState(
-    val moviesRequestStatus: MoviesRequestStatus,
+    val genresMoviesRequestStatus: GenresMoviesRequestStatus = RequestStatus.Loading(),
 )
