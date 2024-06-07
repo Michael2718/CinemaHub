@@ -30,3 +30,8 @@ sealed class Routes(val route: String) {
 data class MovieDetails(
     val movieId: String
 )
+
+@Serializable
+data class History(
+    val userId: Int
+)

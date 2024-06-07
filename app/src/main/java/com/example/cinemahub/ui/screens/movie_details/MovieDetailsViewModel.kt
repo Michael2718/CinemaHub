@@ -26,13 +26,15 @@ class MovieDetailsViewModel @Inject constructor(
     private val repository: CinemaHubRepository
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(
-        MovieDetailsUiState()
+        MovieDetailsUiState(
+            movieId = savedStateHandle["movieId"] ?: ""
+        )
     )
 
     val uiState: StateFlow<MovieDetailsUiState> = _uiState
 
     init {
-        updateMovieId(savedStateHandle["movieId"] ?: "")
+//        updateMovieId(savedStateHandle["movieId"] ?: "")
         fetchMovie()
         fetchReviews()
     }

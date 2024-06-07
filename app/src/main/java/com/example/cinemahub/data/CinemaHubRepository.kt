@@ -160,7 +160,7 @@ class NetworkCinemaHubRepository(
     }
 
     override suspend fun getHistory(userId: Int): List<HistoryResponse> {
-        return cinemaHubApiService.getHistory(userId = userId, authHeader = getHeader())
+        return cinemaHubApiService.getHistory(userId, getHeader())
     }
 
     override suspend fun getUserById(userId: Int): User {

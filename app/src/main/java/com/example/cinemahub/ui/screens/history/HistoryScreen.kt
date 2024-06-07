@@ -1,4 +1,4 @@
-package com.example.cinemahub.ui.screens.favorites
+package com.example.cinemahub.ui.screens.history
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -28,9 +29,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.example.cinemahub.R
 import com.example.cinemahub.network.RequestStatus
 import com.example.cinemahub.ui.composables.ErrorScreen
 import com.example.cinemahub.ui.composables.LoadingScreen
@@ -39,11 +38,11 @@ import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FavoritesScreen(
+fun HistoryScreen(
     modifier: Modifier = Modifier,
-    viewModel: FavoritesViewModel,
+    viewModel: HistoryViewModel,
+    onBack: () -> Unit,
     onMovieClick: (String) -> Unit,
-    onHistory: (Int) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val pullRefreshState = rememberPullToRefreshState()
@@ -54,25 +53,14 @@ fun FavoritesScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "Favorite movies",
+                        text = "History",
                         style = MaterialTheme.typography.headlineSmall
                     )
                 },
                 actions = {
                     IconButton(
                         onClick = {
-                            onHistory(uiState.userId)
-                        }
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.baseline_history_24),
-                            contentDescription = "History",
-                        )
-                    }
-                    IconButton(
-                        onClick = {
                             pullRefreshState.startRefresh()
-//                            viewModel.fetchFavorites()
                         }
                     ) {
                         Icon(
@@ -81,26 +69,29 @@ fun FavoritesScreen(
                         )
                     }
                 },
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back"
+                        )
+                    }
+                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     titleContentColor = MaterialTheme.colorScheme.primary,
                     actionIconContentColor = MaterialTheme.colorScheme.primary
                 ),
                 scrollBehavior = topAppBarScrollBehavior
-//                modifier = Modifier
             )
         },
         modifier = modifier
             .nestedScroll(topAppBarScrollBehavior.nestedScrollConnection)
     ) {
-        FavoritesScreenContent(
+        HistoryScreenContent(
             uiState = uiState,
             pullRefreshState = pullRefreshState,
             onRefresh = {
-                viewModel.fetchFavorites()
-//                    pullRefreshState.startRefresh()
-            },
-            onFavoriteClick = { movieId ->
-                viewModel.deleteFavorite(movieId)
+                viewModel.fetchHistory()
             },
             onMovieClick = onMovieClick,
             modifier = Modifier
@@ -117,11 +108,10 @@ fun FavoritesScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FavoritesScreenContent(
-    uiState: FavoritesScreenUiState,
+fun HistoryScreenContent(
+    uiState: HistoryScreenUiState,
     pullRefreshState: PullToRefreshState,
     onRefresh: () -> Unit,
-    onFavoriteClick: (String) -> Unit,
     onMovieClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -143,7 +133,7 @@ fun FavoritesScreenContent(
             modifier = Modifier
                 .fillMaxWidth()
         ) {
-            when (val requestStatus = uiState.favoritesRequestStatus) {
+            when (val requestStatus = uiState.historyRequestStatus) {
                 is RequestStatus.Error -> {
                     items(1) {
                         ErrorScreen(
@@ -164,8 +154,8 @@ fun FavoritesScreenContent(
                 }
 
                 is RequestStatus.Success -> {
-                    val favorites = requestStatus.data
-                    if (favorites.isEmpty()) {
+                    val history = requestStatus.data
+                    if (history.isEmpty()) {
                         items(1) {
                             Column(
                                 modifier = Modifier
@@ -180,14 +170,14 @@ fun FavoritesScreenContent(
                             }
                         }
                     } else {
-                        items(items = favorites, key = { it.movie.movieId }) { favorite ->
+                        items(items = history, key = { it.watchedDate.toString() }) { movie ->
                             MovieListItemCompact(
-                                movie = favorite.movie,
-                                supportingText = "Added to the list on ${favorite.addedDate}",
-                                isFavorite = true,
-                                onFavoriteClick = onFavoriteClick,
+                                movie = movie.movie,
+                                supportingText = "Watched date: ${movie.watchedDate.date} " +
+                                        "(${movie.watchedDuration.hours}h ${movie.watchedDuration.minutes}m)",
                                 onMovieClick = onMovieClick,
-                                modifier = Modifier.padding(vertical = 8.dp)
+                                modifier = Modifier
+                                    .padding(vertical = 8.dp)
                             )
                         }
                     }
@@ -202,51 +192,3 @@ fun FavoritesScreenContent(
         )
     }
 }
-
-
-
-
-//@Composable
-//@Preview
-//fun PreviewMovieListItemCompact() {
-//    val movieSample = Movie(
-//        "1",
-//        "Movie Title",
-//        LocalDate.parse("2002-01-01"), // Example date format, adjust based on your actual data structure
-//        8.503248,
-//        1000,
-//        "Plot summary of the movie...",
-//        false,
-//        75,
-////        10.99, // Example price, adjust based on your actual data structure
-//        "https://m.media-amazon.com/images/M/MV5BY2I4MmM1N2EtM2YzOS00OWUzLTkzYzctNDc5NDg2N2IyODJmXkEyXkFqcGdeQXVyNzkwMjQ5NzM@._V1_.jpg"
-//    )
-//    val favorite = FavoriteResponse(
-//        movieSample,
-//        LocalDate.parse("2024-01-01")
-//    )
-//
-//    val favorites = listOf(favorite, favorite, favorite, favorite)
-//    CinemaHubTheme {
-//        Surface {
-//            LazyColumn(
-//                verticalArrangement = Arrangement.spacedBy(16.dp),
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//                    .padding(16.dp)
-//            ) {
-//                items(items = favorites) { favorite ->
-//                    MovieListItemCompact(
-//                        movie = favorite.movie,
-//                        supportingText = "Added to the list on ${favorite.addedDate}",
-//                        isFavorite = true,
-//                        onFavoriteClick = {
-//
-//                        },
-//                        modifier = Modifier
-//                    )
-//                }
-//            }
-//        }
-//    }
-//}

@@ -19,7 +19,7 @@ interface AppContainer {
 class DefaultAppContainer : AppContainer {
 
 //    private val baseUrl = "http://192.168.0.218:8080/"
-    private val baseUrl = "http://192.168.0.142:8080/"
+    private val baseUrl = "http://192.168.0.103:8080/"
 //    private val baseUrl = "http://192.168.22.139:8080"
 
     private val json = Json {

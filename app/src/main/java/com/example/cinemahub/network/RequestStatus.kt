@@ -1,6 +1,7 @@
 package com.example.cinemahub.network
 
 import com.example.cinemahub.model.api.favorite.FavoriteResponse
+import com.example.cinemahub.model.api.history.HistoryResponse
 import com.example.cinemahub.model.api.movie.Movie
 import com.example.cinemahub.model.api.movie.MovieDetailsResponse
 import com.example.cinemahub.model.api.movie.MovieSearchResponse
@@ -33,6 +34,7 @@ typealias UpdateUserRequestStatus = RequestStatus<User>
 typealias TokenRequestStatus = RequestStatus<Token>
 
 typealias FavoritesRequestStatus = RequestStatus<List<FavoriteResponse>>
+typealias HistoryRequestStatus = RequestStatus<List<HistoryResponse>>
 
 typealias SearchRequestStatus = RequestStatus<List<MovieSearchResponse>>
 //typealias HistoryRequestStatus = RequestStatus<List<HistoryResponse>>

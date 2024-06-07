@@ -88,10 +88,10 @@ fun ErrorScreen(
 fun MovieListItemCompact(
     movie: Movie,
     supportingText: String,
-    isFavorite: Boolean,
-    onFavoriteClick: (String) -> Unit,
     onMovieClick: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isFavorite: Boolean? = null,
+    onFavoriteClick: ((String) -> Unit)? = null
 ) {
     Card(
         modifier = modifier
@@ -181,19 +181,21 @@ fun MovieListItemCompact(
                     overflow = TextOverflow.Ellipsis
                 )
             }
-            IconButton(
-                onClick = {
-                    onFavoriteClick(movie.movieId)
+            if (onFavoriteClick != null && isFavorite != null) {
+                IconButton(
+                    onClick = {
+                        onFavoriteClick(movie.movieId)
+                    }
+                ) {
+                    Icon(
+                        imageVector = if (isFavorite) {
+                            Icons.Filled.Favorite
+                        } else {
+                            Icons.Filled.FavoriteBorder
+                        },
+                        contentDescription = null
+                    )
                 }
-            ) {
-                Icon(
-                    imageVector = if (isFavorite) {
-                        Icons.Filled.Favorite
-                    } else {
-                        Icons.Filled.FavoriteBorder
-                    },
-                    contentDescription = null
-                )
             }
         }
     }
@@ -201,7 +203,7 @@ fun MovieListItemCompact(
 
 @Composable
 fun MovieListItemCompact(
-    movie: MovieSearchResponse,
+    movieSearchResponse: MovieSearchResponse,
     supportingText: String,
     onFavoriteClick: (String, Boolean) -> Unit,
     onMovieClick: (String) -> Unit,
@@ -210,7 +212,7 @@ fun MovieListItemCompact(
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .clickable { onMovieClick(movie.movieId) },
+            .clickable { onMovieClick(movieSearchResponse.movieId) },
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         shape = RoundedCornerShape(8.dp)
     ) {
@@ -220,7 +222,7 @@ fun MovieListItemCompact(
             horizontalArrangement = Arrangement.Start,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            if (movie.primaryImageUrl.isEmpty()) {
+            if (movieSearchResponse.primaryImageUrl.isEmpty()) {
                 Image(
                     painter = painterResource(id = R.drawable.broken_image_24),
                     contentDescription = null,
@@ -230,10 +232,10 @@ fun MovieListItemCompact(
             } else {
                 AsyncImage(
                     model = ImageRequest.Builder(LocalContext.current)
-                        .data(movie.primaryImageUrl)
+                        .data(movieSearchResponse.primaryImageUrl)
                         .crossfade(true)
                         .build(),
-                    contentDescription = movie.title,
+                    contentDescription = movieSearchResponse.title,
                     modifier = Modifier
                         .height(128.dp)
                         .aspectRatio(2 / 3f)
@@ -258,14 +260,14 @@ fun MovieListItemCompact(
             ) {
                 Text(
                     text = "⭐${
-                        "%.${2}f".format(movie.voteAverage).toDouble()
+                        "%.${2}f".format(movieSearchResponse.voteAverage).toDouble()
                     }",
                     style = MaterialTheme.typography.titleMedium,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
                 Text(
-                    text = movie.title,
+                    text = movieSearchResponse.title,
                     style = MaterialTheme.typography.titleMedium,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
@@ -275,13 +277,13 @@ fun MovieListItemCompact(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Text(
-                        text = "${movie.releaseDate.year}",
+                        text = "${movieSearchResponse.releaseDate.year}",
                         style = MaterialTheme.typography.bodyMedium,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
                     Text(
-                        text = "${movie.duration.hours}h ${movie.duration.minutes}m",
+                        text = "${movieSearchResponse.duration.hours}h ${movieSearchResponse.duration.minutes}m",
                         style = MaterialTheme.typography.bodyMedium,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
@@ -297,11 +299,11 @@ fun MovieListItemCompact(
             }
             IconButton(
                 onClick = {
-                    onFavoriteClick(movie.movieId, movie.isFavorite)
+                    onFavoriteClick(movieSearchResponse.movieId, movieSearchResponse.isFavorite)
                 }
             ) {
                 Icon(
-                    imageVector = if (movie.isFavorite) {
+                    imageVector = if (movieSearchResponse.isFavorite) {
                         Icons.Filled.Favorite
                     } else {
                         Icons.Filled.FavoriteBorder

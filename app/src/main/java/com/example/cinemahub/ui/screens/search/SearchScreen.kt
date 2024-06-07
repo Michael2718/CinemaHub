@@ -222,7 +222,7 @@ fun SearchScreenContent(
                     } else {
                         items(items = movies) { movie ->
                             MovieListItemCompact(
-                                movie = movie,
+                                movieSearchResponse = movie,
                                 supportingText = "Price: ${movie.price}",
                                 onFavoriteClick = onFavoriteClick,
                                 onMovieClick = onMovieClick,

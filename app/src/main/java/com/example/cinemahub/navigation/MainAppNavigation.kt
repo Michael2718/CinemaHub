@@ -12,6 +12,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import com.example.cinemahub.ui.screens.favorites.FavoritesScreen
 import com.example.cinemahub.ui.screens.favorites.FavoritesViewModel
+import com.example.cinemahub.ui.screens.history.HistoryScreen
+import com.example.cinemahub.ui.screens.history.HistoryViewModel
 import com.example.cinemahub.ui.screens.home.HomeScreen
 import com.example.cinemahub.ui.screens.home.HomeViewModel
 import com.example.cinemahub.ui.screens.movie_details.MovieDetailsScreen
@@ -37,21 +39,21 @@ fun MainAppNavigation(
         navController = navController,
         startDestination = startDestination
     ) {
-        homeGraph(navController = navController)
+        homeGraph(
+//            navController = navController
+        )
         searchGraph(
             navController = navController,
             viewModelStoreOwner = searchScreenViewModelStoreOwner
         )
         favoritesGraph(navController = navController)
         profileGraph(
-            navController = navController,
+//            navController = navController,
             onLogOut = onLogOut
         )
         composable<MovieDetails> {
-//            val args = it.toRoute<MovieDetails>()
             val viewModel: MovieDetailsViewModel = hiltViewModel()
             MovieDetailsScreen(
-//                movieId = args.movieId,
                 viewModel = viewModel,
                 onBack = {
                     navController.navigateUp()
@@ -62,7 +64,7 @@ fun MainAppNavigation(
 }
 
 fun NavGraphBuilder.homeGraph(
-    navController: NavHostController
+//    navController: NavHostController
 ) {
     navigation(startDestination = Routes.Home.route, route = Routes.HomeGraph.route) {
         composable(Routes.Home.route) {
@@ -120,6 +122,21 @@ fun NavGraphBuilder.favoritesGraph(
                 viewModel = viewModel,
                 onMovieClick = {
                     navController.navigate(MovieDetails(it))
+                },
+                onHistory = {
+                    navController.navigate(History(it))
+                }
+            )
+        }
+        composable<History> {
+            val viewModel: HistoryViewModel = hiltViewModel()
+            HistoryScreen(
+                viewModel = viewModel,
+                onBack = {
+                    navController.navigateUp()
+                },
+                onMovieClick = {
+                    navController.navigate(MovieDetails(it))
                 }
             )
         }
@@ -127,7 +144,7 @@ fun NavGraphBuilder.favoritesGraph(
 }
 
 fun NavGraphBuilder.profileGraph(
-    navController: NavHostController,
+//    navController: NavHostController,
     onLogOut: () -> Unit
 ) {
     navigation(startDestination = Routes.Profile.route, route = Routes.ProfileGraph.route) {
