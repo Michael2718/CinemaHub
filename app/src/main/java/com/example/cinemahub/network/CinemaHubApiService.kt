@@ -6,7 +6,7 @@ import com.example.cinemahub.model.api.history.HistoryResponse
 import com.example.cinemahub.model.api.movie.Movie
 import com.example.cinemahub.model.api.movie.MovieDetailsResponse
 import com.example.cinemahub.model.api.movie.MovieSearchResponse
-import com.example.cinemahub.model.api.movie.MoviesResponse
+import com.example.cinemahub.model.api.movie.UpdateMovieRequest
 import com.example.cinemahub.model.api.review.ReviewResponse
 import com.example.cinemahub.model.api.signIn.SignInRequest
 import com.example.cinemahub.model.api.signUp.SignUpRequest
@@ -28,9 +28,6 @@ interface CinemaHubApiService {
     /*
     * Movies
     * */
-    @GET("movies")
-    suspend fun getAllMovies(@Header("Authorization") authHeader: String): MoviesResponse
-
     @GET("movies/{movieId}")
     suspend fun getMovieById(
         @Path("movieId") movieId: String,
@@ -44,6 +41,33 @@ interface CinemaHubApiService {
         @Header("Authorization") authHeader: String
     ): MovieDetailsResponse
 
+    @GET("movies")
+    suspend fun getAllMovies(
+        @Header("Authorization") authHeader: String
+    ): List<Movie>
+
+    @POST("movies")
+    suspend fun addMovie(
+        @Body movie: Movie,
+        @Header("Authorization") authHeader: String
+    )
+
+    @DELETE("movies/{movieId}")
+    suspend fun deleteMovie(
+        @Path("movieId") movieId: String,
+        @Header("Authorization") authHeader: String
+    )
+
+    @PUT("movies/{movieId}")
+    suspend fun updateMovie(
+        @Path("movieId") movieId: String,
+        @Body request: UpdateMovieRequest,
+        @Header("Authorization") authHeader: String
+    ): Movie
+
+    /*
+    * Search
+    * */
     @GET("search")
     suspend fun searchMovies(
         @Query("query") query: String?,
@@ -115,9 +139,20 @@ interface CinemaHubApiService {
     @PUT("users/{userId}")
     suspend fun updateUser(
         @Path("userId") userId: Int,
-        @Body updateUserRequestStatus: UpdateUserRequest,
+        @Body request: UpdateUserRequest,
         @Header("Authorization") authHeader: String
     ): User
+
+    @GET("users")
+    suspend fun getAllUsers(
+        @Header("Authorization") authHeader: String
+    ): List<User>
+
+    @DELETE("users/{userId}")
+    suspend fun deleteUser(
+        @Path("userId") userId: Int,
+        @Header("Authorization") authHeader: String
+    )
 
     @POST("signin")
     suspend fun signIn(@Body credentials: SignInRequest): Token
@@ -155,6 +190,13 @@ interface CinemaHubApiService {
         @Path("movieId") movieId: String,
         @Path("userId") userId: Int,
         @Query("like") like: Boolean,
+        @Header("Authorization") authHeader: String
+    )
+
+    @DELETE("reviews/{movieId}/{userId}")
+    suspend fun deleteReview(
+        @Path("movieId") movieId: String,
+        @Path("userId") userId: Int,
         @Header("Authorization") authHeader: String
     )
 

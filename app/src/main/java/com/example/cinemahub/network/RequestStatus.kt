@@ -19,6 +19,7 @@ sealed interface RequestStatus<T> {
     class Loading<T> : RequestStatus<T>
 }
 
+typealias MoviesRequestStatus = RequestStatus<List<Movie>>
 typealias GenresMoviesRequestStatus = RequestStatus<Map<String, List<Movie>>?>
 typealias MovieRequestStatus = RequestStatus<MovieDetailsResponse>
 
@@ -36,5 +37,4 @@ typealias FavoritesRequestStatus = RequestStatus<List<FavoriteResponse>>
 typealias HistoryRequestStatus = RequestStatus<List<HistoryResponse>>
 
 typealias SearchRequestStatus = RequestStatus<List<MovieSearchResponse>>
-//typealias HistoryRequestStatus = RequestStatus<List<HistoryResponse>>
 typealias SignUpRequestStatus = RequestStatus<Token>

@@ -10,6 +10,17 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import com.example.cinemahub.navigation.routes.Favorites
+import com.example.cinemahub.navigation.routes.FavoritesGraph
+import com.example.cinemahub.navigation.routes.History
+import com.example.cinemahub.navigation.routes.Home
+import com.example.cinemahub.navigation.routes.HomeGraph
+import com.example.cinemahub.navigation.routes.MovieDetails
+import com.example.cinemahub.navigation.routes.Profile
+import com.example.cinemahub.navigation.routes.ProfileGraph
+import com.example.cinemahub.navigation.routes.Search
+import com.example.cinemahub.navigation.routes.SearchFilter
+import com.example.cinemahub.navigation.routes.SearchGraph
 import com.example.cinemahub.ui.screens.user.favorites.FavoritesScreen
 import com.example.cinemahub.ui.screens.user.favorites.FavoritesViewModel
 import com.example.cinemahub.ui.screens.user.history.HistoryScreen
@@ -25,7 +36,7 @@ import com.example.cinemahub.ui.screens.user.search.SearchScreen
 import com.example.cinemahub.ui.screens.user.search.SearchViewModel
 
 @Composable
-fun MainAppNavigation(
+fun MainUserAppNavigation(
     navController: NavHostController,
     onLogOut: () -> Unit,
     modifier: Modifier = Modifier,

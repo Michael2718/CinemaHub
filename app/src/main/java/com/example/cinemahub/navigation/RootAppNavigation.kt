@@ -1,7 +1,5 @@
 package com.example.cinemahub.navigation
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
@@ -12,7 +10,17 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.cinemahub.PreferenceManagerSingleton
-import com.example.cinemahub.ui.screens.user.main.MainScreen
+import com.example.cinemahub.navigation.routes.FavoritesGraph
+import com.example.cinemahub.navigation.routes.HomeGraph
+import com.example.cinemahub.navigation.routes.MainAdmin
+import com.example.cinemahub.navigation.routes.MainUser
+import com.example.cinemahub.navigation.routes.MoviesGraph
+import com.example.cinemahub.navigation.routes.ProfileGraph
+import com.example.cinemahub.navigation.routes.SearchGraph
+import com.example.cinemahub.navigation.routes.SignIn
+import com.example.cinemahub.navigation.routes.SignUp
+import com.example.cinemahub.navigation.routes.UsersGraph
+import com.example.cinemahub.ui.screens.MainScreen
 import com.example.cinemahub.ui.screens.user.signin.SignInScreen
 import com.example.cinemahub.ui.screens.user.signin.SignInViewModel
 import com.example.cinemahub.ui.screens.user.signin.SignInWelcomeScreen
@@ -25,13 +33,11 @@ import kotlinx.coroutines.launch
 fun RootAppNavigation(
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
-//    startDestination: String = Routes.SignIn.route
 ) {
     NavHost(
         modifier = modifier,
         navController = navController,
-        startDestination = SignIn,
-//        route = Root
+        startDestination = SignIn
     ) {
         composable<SignIn> {
             val viewModel: SignInViewModel = hiltViewModel()
@@ -99,13 +105,31 @@ fun RootAppNavigation(
         }
 
         composable<MainAdmin> {
-            Column {
-                Text("Admin panel")
-            }
+            MainScreen(
+                navGraphs = listOf(
+                    MoviesGraph,
+//                    ReviewsGraph,
+                    UsersGraph
+                ),
+                isAdmin = true,
+                onLogOut = {
+                    PreferenceManagerSingleton.logOut()
+                    navController.navigate(SignIn) {
+                        popUpTo(0)
+                    }
+                }
+            )
         }
 
         composable<MainUser> {
             MainScreen(
+                navGraphs = listOf(
+                    HomeGraph,
+                    SearchGraph,
+                    FavoritesGraph,
+                    ProfileGraph,
+                ),
+                isAdmin = false,
                 onLogOut = {
                     PreferenceManagerSingleton.logOut()
                     navController.navigate(SignIn) {

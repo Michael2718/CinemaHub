@@ -7,6 +7,7 @@ import com.example.cinemahub.model.api.history.HistoryResponse
 import com.example.cinemahub.model.api.movie.Movie
 import com.example.cinemahub.model.api.movie.MovieDetailsResponse
 import com.example.cinemahub.model.api.movie.MovieSearchResponse
+import com.example.cinemahub.model.api.movie.UpdateMovieRequest
 import com.example.cinemahub.model.api.review.AddReviewRequest
 import com.example.cinemahub.model.api.review.ReviewResponse
 import com.example.cinemahub.model.api.signIn.SignInRequest
@@ -27,7 +28,6 @@ import org.postgresql.util.PGInterval
 interface CinemaHubRepository {
     suspend fun updateToken(newToken: String)
 
-    suspend fun getAllMovies(): List<Movie>
     suspend fun getMovieById(movieId: String): Movie
     suspend fun getMovieByUserId(movieId: String, userId: Int): MovieDetailsResponse
     suspend fun searchMovies(
@@ -44,6 +44,11 @@ interface CinemaHubRepository {
         userId: Int?
     ): List<MovieSearchResponse>
 
+    suspend fun getAllMovies(): List<Movie>
+    suspend fun addMovie(movie: Movie): Boolean
+    suspend fun deleteMovie(movieId: String): Boolean
+    suspend fun updateMovie(movieId: String, request: UpdateMovieRequest): Movie
+
     suspend fun getFavorites(userId: Int): List<FavoriteResponse>
     suspend fun deleteFavorite(userId: Int, movieId: String): Boolean
     suspend fun deleteAllFavorites(userId: Int): Boolean
@@ -54,6 +59,8 @@ interface CinemaHubRepository {
     suspend fun getUserById(userId: Int): User
     suspend fun getUserByUsername(username: String): User
     suspend fun updateUser(userId: Int, updateUserRequest: UpdateUserRequest): User
+    suspend fun getAllUsers(): List<User>
+    suspend fun deleteUser(userId: Int): Boolean
 
     suspend fun signIn(signInRequest: SignInRequest): Token
     suspend fun signUp(signUpRequest: SignUpRequest): Token
@@ -62,6 +69,7 @@ interface CinemaHubRepository {
     suspend fun getReview(movieId: String, userId: Int): ReviewResponse?
     suspend fun rateReview(movieId: String, userId: Int, like: Boolean): Boolean
     suspend fun addReview(addReviewRequest: AddReviewRequest): ReviewResponse?
+    suspend fun deleteReview(movieId: String, userId: Int): Boolean
 
     suspend fun buyMovie(movieId: String, userId: Int, paymentMethod: Int): Transaction?
 
@@ -85,11 +93,33 @@ class NetworkCinemaHubRepository(
         }
     }
 
-    private fun getToken(): String = authHeader.value.token
+//    private fun getToken(): String = authHeader.value.token
     private fun getHeader(): String = "Bearer ${authHeader.value.token}"
 
     override suspend fun getAllMovies(): List<Movie> {
-        return cinemaHubApiService.getAllMovies(getToken()).items
+        return cinemaHubApiService.getAllMovies(getHeader())
+    }
+
+    override suspend fun addMovie(movie: Movie): Boolean {
+        return try {
+            cinemaHubApiService.addMovie(movie, getHeader())
+            true
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    override suspend fun deleteMovie(movieId: String): Boolean {
+        return try {
+            cinemaHubApiService.deleteMovie(movieId, getHeader())
+            true
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    override suspend fun updateMovie(movieId: String, request: UpdateMovieRequest): Movie {
+        return cinemaHubApiService.updateMovie(movieId, request, getHeader())
     }
 
     override suspend fun getMovieById(movieId: String): Movie {
@@ -180,6 +210,19 @@ class NetworkCinemaHubRepository(
         return cinemaHubApiService.updateUser(userId, updateUserRequest, getHeader())
     }
 
+    override suspend fun getAllUsers(): List<User> {
+        return cinemaHubApiService.getAllUsers(getHeader())
+    }
+
+    override suspend fun deleteUser(userId: Int): Boolean {
+        return try {
+            cinemaHubApiService.deleteUser(userId, getHeader())
+            true
+        } catch (e: Exception) {
+            false
+        }
+    }
+
     override suspend fun signIn(signInRequest: SignInRequest): Token {
         return cinemaHubApiService.signIn(signInRequest)
     }
@@ -222,6 +265,15 @@ class NetworkCinemaHubRepository(
             )
         } catch (e: Exception) {
             null
+        }
+    }
+
+    override suspend fun deleteReview(movieId: String, userId: Int): Boolean {
+        return try {
+            cinemaHubApiService.deleteReview(movieId, userId, getHeader())
+            true
+        } catch (e: Exception) {
+            false
         }
     }
 
