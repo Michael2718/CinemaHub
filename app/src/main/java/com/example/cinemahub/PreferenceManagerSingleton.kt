@@ -35,12 +35,21 @@ object PreferenceManagerSingleton {
     }
 
     fun getUserId(): Int {
-        return preferences.getInt("user_id", -100)
+        return preferences.getInt("user_id", -1)
+    }
+
+    fun saveAudience(audience: String) {
+        preferences.edit().putString("audience", audience).apply()
+    }
+
+    fun getAudience(): String {
+        return preferences.getString("audience", null) ?: ""
     }
 
     fun logOut() {
         preferences.edit().remove("jwt_token").apply()
         preferences.edit().remove("username").apply()
         preferences.edit().remove("user_id").apply()
+        preferences.edit().remove("audience").apply()
     }
 }

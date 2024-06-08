@@ -2,29 +2,44 @@ package com.example.cinemahub.navigation
 
 import kotlinx.serialization.Serializable
 
-sealed class Routes(val route: String) {
-    data object Splash : Routes("splash")
-    data object Welcome : Routes("welcome")
-    data object Root : Routes("root")
+@Serializable
+data object SignIn
 
-    data object SignIn : Routes("sign_in")
-    data object SignUp : Routes("sign_up")
+@Serializable
+data object SignUp
 
-    data object Main : Routes("main")
+@Serializable
+data object MainUser
 
-    data object HomeGraph : Routes("home_graph")
-    data object Home : Routes("home")
+@Serializable
+data object MainAdmin
 
-    data object SearchGraph : Routes("search_graph")
-    data object Search : Routes("search")
-    data object SearchFilter : Routes("search_filter")
+@Serializable
+data object HomeGraph
 
-    data object FavoritesGraph : Routes("favorites_graph")
-    data object Favorites : Routes("favorites")
+@Serializable
+data object Home
 
-    data object ProfileGraph : Routes("profile_graph")
-    data object Profile : Routes("profile")
-}
+@Serializable
+data object SearchGraph
+
+@Serializable
+data object Search
+
+@Serializable
+data object SearchFilter
+
+@Serializable
+data object FavoritesGraph
+
+@Serializable
+data object Favorites
+
+@Serializable
+data object ProfileGraph
+
+@Serializable
+data object Profile
 
 @Serializable
 data class MovieDetails(

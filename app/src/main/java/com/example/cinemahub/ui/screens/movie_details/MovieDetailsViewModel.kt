@@ -22,7 +22,6 @@ import javax.inject.Inject
 @HiltViewModel
 class MovieDetailsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-//    movieId: String,
     private val repository: CinemaHubRepository
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(
@@ -34,17 +33,8 @@ class MovieDetailsViewModel @Inject constructor(
     val uiState: StateFlow<MovieDetailsUiState> = _uiState
 
     init {
-//        updateMovieId(savedStateHandle["movieId"] ?: "")
         fetchMovie()
         fetchReviews()
-    }
-
-    private fun updateMovieId(movieId: String) {
-        _uiState.update {
-            it.copy(
-                movieId = movieId
-            )
-        }
     }
 
     fun fetchMovie(

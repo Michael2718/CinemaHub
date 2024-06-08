@@ -75,6 +75,7 @@ dependencies {
     implementation(libs.kotlinx.datetime)
     implementation(libs.androidx.preference.ktx)
     implementation(libs.postgresql)
+    implementation(libs.gson)
     kapt(libs.google.dagger.hilt.compiler)
 
     testImplementation(libs.junit)

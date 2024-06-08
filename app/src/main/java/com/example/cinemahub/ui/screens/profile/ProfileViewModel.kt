@@ -6,8 +6,8 @@ import com.example.cinemahub.PreferenceManagerSingleton
 import com.example.cinemahub.data.CinemaHubRepository
 import com.example.cinemahub.model.api.user.UpdateUserRequest
 import com.example.cinemahub.network.RequestStatus
-import com.example.cinemahub.network.UserRequestStatus
 import com.example.cinemahub.network.UpdateUserRequestStatus
+import com.example.cinemahub.network.UserRequestStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,7 +27,7 @@ class ProfileViewModel @Inject constructor(
     val uiState: StateFlow<ProfileScreenUiState> = _uiState
 
     init {
-        updateUserid(PreferenceManagerSingleton.getUserId())
+//        updateUserid(PreferenceManagerSingleton.getUserId())
         fetchUser()
     }
 
@@ -62,15 +62,15 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
-    private fun updateUserid(userId: Int) {
-        viewModelScope.launch(Dispatchers.IO) {
-            _uiState.update {
-                it.copy(
-                    userId = userId
-                )
-            }
-        }
-    }
+//    private fun updateUserid(userId: Int) {
+//        viewModelScope.launch(Dispatchers.IO) {
+//            _uiState.update {
+//                it.copy(
+//                    userId = userId
+//                )
+//            }
+//        }
+//    }
 
     fun updateUsername(username: String) {
         _uiState.update {
@@ -175,7 +175,6 @@ class ProfileViewModel @Inject constructor(
 data class ProfileScreenUiState(
     val userRequestStatus: UserRequestStatus = RequestStatus.Loading(),
     val userId: Int = PreferenceManagerSingleton.getUserId(),
-
     val username: String = "",
     val firstName: String = "",
     val lastName: String = "",

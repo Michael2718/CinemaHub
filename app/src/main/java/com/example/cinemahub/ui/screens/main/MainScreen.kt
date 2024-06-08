@@ -23,30 +23,39 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.cinemahub.PreferenceManagerSingleton
+import com.example.cinemahub.navigation.FavoritesGraph
+import com.example.cinemahub.navigation.HomeGraph
 import com.example.cinemahub.navigation.MainAppNavigation
-import com.example.cinemahub.navigation.Routes
+import com.example.cinemahub.navigation.ProfileGraph
+//import com.example.cinemahub.navigation.Routes
+import com.example.cinemahub.navigation.SearchGraph
 
 @Composable
 fun MainScreen(
-    viewModel: MainViewModel,
     onLogOut: () -> Unit,
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController()
 ) {
-    val navGraphs: List<Routes> = listOf(
-        Routes.HomeGraph,
-        Routes.SearchGraph,
-        Routes.FavoritesGraph,
-        Routes.ProfileGraph,
+//    val navGraphs: List<Routes> = listOf(
+//        Routes.HomeGraph,
+//        Routes.SearchGraph,
+//        Routes.FavoritesGraph,
+//        Routes.ProfileGraph,
+//    )
+
+    val navGraphs = listOf(
+        HomeGraph,
+        SearchGraph,
+        FavoritesGraph,
+        ProfileGraph,
     )
 
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = backStackEntry?.destination
+//    val userId = PreferenceManagerSingleton.getUserId()
 
     Scaffold(
-//        topBar = {
-//            HomeScreenTopBar()
-//        },
         bottomBar = {
             BottomNavigationBar(
                 currentDestination = currentDestination,
@@ -78,8 +87,8 @@ fun MainScreen(
 @Composable
 private fun BottomNavigationBar(
     currentDestination: NavDestination?,
-    onClick: ((String) -> Unit),
-    navGraphs: List<Routes>,
+    onClick: ((Any) -> Unit),
+    navGraphs: List<Any>,
     modifier: Modifier = Modifier
 ) {
     NavigationBar(
@@ -87,17 +96,17 @@ private fun BottomNavigationBar(
     ) {
         for (navItem in navGraphs) {
             NavigationBarItem(
-                selected = currentDestination?.hierarchy?.any { it.route == navItem.route } == true,
+                selected = currentDestination?.hierarchy?.any { it == navItem } == true,
                 onClick = {
-                    onClick(navItem.route)
+                    onClick(navItem)
                 },
                 icon = {
                     Icon(
                         imageVector = when (navItem) {
-                            Routes.HomeGraph -> Icons.Filled.Home
-                            Routes.SearchGraph -> Icons.Filled.Search
-                            Routes.FavoritesGraph -> Icons.Filled.Favorite
-                            Routes.ProfileGraph -> Icons.Filled.AccountCircle
+                            HomeGraph -> Icons.Filled.Home
+                            SearchGraph -> Icons.Filled.Search
+                            FavoritesGraph -> Icons.Filled.Favorite
+                            ProfileGraph -> Icons.Filled.AccountCircle
                             else -> Icons.Filled.Warning
                         },
                         contentDescription = null

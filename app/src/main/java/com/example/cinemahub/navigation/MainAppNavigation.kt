@@ -9,7 +9,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.navigation
+import androidx.navigation.navigation
 import com.example.cinemahub.ui.screens.favorites.FavoritesScreen
 import com.example.cinemahub.ui.screens.favorites.FavoritesViewModel
 import com.example.cinemahub.ui.screens.history.HistoryScreen
@@ -29,7 +29,7 @@ fun MainAppNavigation(
     navController: NavHostController,
     onLogOut: () -> Unit,
     modifier: Modifier = Modifier,
-    startDestination: String = Routes.HomeGraph.route
+    startDestination: Any = HomeGraph
 ) {
     val searchScreenViewModelStoreOwner = checkNotNull(LocalViewModelStoreOwner.current) {
         "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
@@ -66,8 +66,8 @@ fun MainAppNavigation(
 fun NavGraphBuilder.homeGraph(
     navController: NavHostController
 ) {
-    navigation(startDestination = Routes.Home.route, route = Routes.HomeGraph.route) {
-        composable(Routes.Home.route) {
+    navigation<HomeGraph>(Home) {
+        composable<Home> {
             val viewModel: HomeViewModel = hiltViewModel()
             HomeScreen(
                 viewModel = viewModel,
@@ -83,13 +83,13 @@ fun NavGraphBuilder.searchGraph(
     navController: NavHostController,
     viewModelStoreOwner: ViewModelStoreOwner
 ) {
-    navigation(startDestination = Routes.Search.route, route = Routes.SearchGraph.route) {
-        composable(Routes.Search.route) {
+    navigation<SearchGraph>(Search) {
+        composable<Search> {
             val viewModel: SearchViewModel = hiltViewModel(viewModelStoreOwner)
             SearchScreen(
                 viewModel = viewModel,
                 onFilter = {
-                    navController.navigate(Routes.SearchFilter.route)
+                    navController.navigate(SearchFilter)
                 },
                 onMovieClick = {
                     navController.navigate(MovieDetails(it))
@@ -97,7 +97,7 @@ fun NavGraphBuilder.searchGraph(
             )
         }
 
-        composable(Routes.SearchFilter.route) {
+        composable<SearchFilter> {
             val viewModel: SearchViewModel = hiltViewModel(viewModelStoreOwner)
             SearchFiltersScreen(
                 viewModel = viewModel,
@@ -117,8 +117,8 @@ fun NavGraphBuilder.searchGraph(
 fun NavGraphBuilder.favoritesGraph(
     navController: NavHostController
 ) {
-    navigation(startDestination = Routes.Favorites.route, route = Routes.FavoritesGraph.route) {
-        composable(Routes.Favorites.route) {
+    navigation<FavoritesGraph>(Favorites) {
+        composable<Favorites> {
             val viewModel: FavoritesViewModel = hiltViewModel()
             viewModel.fetchFavorites()
             FavoritesScreen(
@@ -147,11 +147,10 @@ fun NavGraphBuilder.favoritesGraph(
 }
 
 fun NavGraphBuilder.profileGraph(
-//    navController: NavHostController,
     onLogOut: () -> Unit
 ) {
-    navigation(startDestination = Routes.Profile.route, route = Routes.ProfileGraph.route) {
-        composable(Routes.Profile.route) {
+    navigation<ProfileGraph>(Profile) {
+        composable<Profile> {
             val viewModel: ProfileViewModel = hiltViewModel()
             ProfileScreen(
                 viewModel = viewModel,

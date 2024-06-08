@@ -20,6 +20,7 @@ import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -27,16 +28,16 @@ interface CinemaHubApiService {
     /*
     * Movies
     * */
-    @GET("movie")
+    @GET("movies")
     suspend fun getAllMovies(@Header("Authorization") authHeader: String): MoviesResponse
 
-    @GET("movie/{movieId}")
+    @GET("movies/{movieId}")
     suspend fun getMovieById(
         @Path("movieId") movieId: String,
         @Header("Authorization") authHeader: String
     ): Movie
 
-    @GET("movie/{movieId}/{userId}")
+    @GET("movies/{movieId}/{userId}")
     suspend fun getMovieByUserId(
         @Path("movieId") movieId: String,
         @Path("userId") userId: Int,
@@ -97,21 +98,21 @@ interface CinemaHubApiService {
     ): List<HistoryResponse>
 
     /*
-    * User
+    * Users
     * */
-    @GET("user/{userId}")
+    @GET("users/{userId}")
     suspend fun getUserById(
         @Path("userId") userId: Int,
         @Header("Authorization") authHeader: String
     ): User
 
-    @GET("user")
+    @GET("users/username/{username}")
     suspend fun getUserByUsername(
-        @Query("username") username: String,
+        @Path("username") username: String,
         @Header("Authorization") authHeader: String
     ): User
 
-    @POST("user/{userId}")
+    @PUT("users/{userId}")
     suspend fun updateUser(
         @Path("userId") userId: Int,
         @Body updateUserRequestStatus: UpdateUserRequest,
@@ -160,7 +161,7 @@ interface CinemaHubApiService {
     /*
     * Transaction
     * */
-    @POST("transaction/{movieId}/{userId}/{paymentMethod}")
+    @POST("transactions/{movieId}/{userId}/{paymentMethod}")
     suspend fun buyMovie(
         @Path("movieId") movieId: String,
         @Path("userId") userId: Int,

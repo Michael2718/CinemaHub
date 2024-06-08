@@ -6,6 +6,7 @@ import com.example.cinemahub.data.CinemaHubRepository
 import com.example.cinemahub.model.api.signIn.SignInRequest
 import com.example.cinemahub.network.RequestStatus
 import com.example.cinemahub.network.TokenRequestStatus
+import com.example.cinemahub.util.extractAudienceFromJwt
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -58,13 +59,18 @@ class SignInViewModel @Inject constructor(
 
         if (status is RequestStatus.Success) {
             val token = status.data.token
-            PreferenceManagerSingleton.saveToken(token)
+            val audience = extractAudienceFromJwt(token)!!
+
             repository.updateToken(token)
+
+            PreferenceManagerSingleton.saveToken(token)
+            PreferenceManagerSingleton.saveAudience(audience)
             PreferenceManagerSingleton.saveUsername(username)
 
-            val userId = repository.getUserByUsername(username).userId
-            PreferenceManagerSingleton.saveUserId(userId)
-
+            if (audience != "admin") {
+                val userId = repository.getUserByUsername(username).userId
+                PreferenceManagerSingleton.saveUserId(userId)
+            }
             return true
         }
 
