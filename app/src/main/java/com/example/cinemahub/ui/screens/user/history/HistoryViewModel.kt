@@ -1,4 +1,4 @@
-package com.example.cinemahub.ui.screens.history
+package com.example.cinemahub.ui.screens.user.history
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel

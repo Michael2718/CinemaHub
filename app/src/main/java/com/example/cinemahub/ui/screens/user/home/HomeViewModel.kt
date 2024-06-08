@@ -1,4 +1,4 @@
-package com.example.cinemahub.ui.screens.home
+package com.example.cinemahub.ui.screens.user.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

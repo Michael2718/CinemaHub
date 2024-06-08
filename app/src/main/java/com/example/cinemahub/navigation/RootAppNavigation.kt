@@ -12,12 +12,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.cinemahub.PreferenceManagerSingleton
-import com.example.cinemahub.ui.screens.main.MainScreen
-import com.example.cinemahub.ui.screens.signin.SignInScreen
-import com.example.cinemahub.ui.screens.signin.SignInViewModel
-import com.example.cinemahub.ui.screens.signin.SignInWelcomeScreen
-import com.example.cinemahub.ui.screens.signup.SignUpScreen
-import com.example.cinemahub.ui.screens.signup.SignUpViewModel
+import com.example.cinemahub.ui.screens.user.main.MainScreen
+import com.example.cinemahub.ui.screens.user.signin.SignInScreen
+import com.example.cinemahub.ui.screens.user.signin.SignInViewModel
+import com.example.cinemahub.ui.screens.user.signin.SignInWelcomeScreen
+import com.example.cinemahub.ui.screens.user.signup.SignUpScreen
+import com.example.cinemahub.ui.screens.user.signup.SignUpViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 

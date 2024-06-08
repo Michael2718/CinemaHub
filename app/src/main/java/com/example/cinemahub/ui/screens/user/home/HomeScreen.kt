@@ -1,4 +1,4 @@
-package com.example.cinemahub.ui.screens.home
+package com.example.cinemahub.ui.screens.user.home
 
 import android.content.Context
 import androidx.compose.foundation.clickable

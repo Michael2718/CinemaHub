@@ -1,4 +1,4 @@
-package com.example.cinemahub.ui.screens.signup
+package com.example.cinemahub.ui.screens.user.signup
 
 import android.util.Patterns
 import androidx.lifecycle.ViewModel

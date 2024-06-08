@@ -1,4 +1,4 @@
-package com.example.cinemahub.ui.screens.signup
+package com.example.cinemahub.ui.screens.user.signup
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

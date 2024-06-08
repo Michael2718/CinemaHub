@@ -1,4 +1,4 @@
-package com.example.cinemahub.ui.screens.favorites
+package com.example.cinemahub.ui.screens.user.favorites
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

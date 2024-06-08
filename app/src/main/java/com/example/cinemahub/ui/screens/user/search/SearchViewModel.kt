@@ -1,4 +1,4 @@
-package com.example.cinemahub.ui.screens.search
+package com.example.cinemahub.ui.screens.user.search
 
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue

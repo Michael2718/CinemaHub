@@ -1,4 +1,4 @@
-package com.example.cinemahub.ui.screens.signin
+package com.example.cinemahub.ui.screens.user.signin
 
 import androidx.lifecycle.ViewModel
 import com.example.cinemahub.PreferenceManagerSingleton

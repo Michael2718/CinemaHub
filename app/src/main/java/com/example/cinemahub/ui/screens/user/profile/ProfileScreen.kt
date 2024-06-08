@@ -1,4 +1,4 @@
-package com.example.cinemahub.ui.screens.profile
+package com.example.cinemahub.ui.screens.user.profile
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

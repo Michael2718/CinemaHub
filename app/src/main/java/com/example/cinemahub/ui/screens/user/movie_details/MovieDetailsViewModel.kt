@@ -1,4 +1,4 @@
-package com.example.cinemahub.ui.screens.movie_details
+package com.example.cinemahub.ui.screens.user.movie_details
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel

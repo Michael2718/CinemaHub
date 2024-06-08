@@ -10,19 +10,19 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
-import com.example.cinemahub.ui.screens.favorites.FavoritesScreen
-import com.example.cinemahub.ui.screens.favorites.FavoritesViewModel
-import com.example.cinemahub.ui.screens.history.HistoryScreen
-import com.example.cinemahub.ui.screens.history.HistoryViewModel
-import com.example.cinemahub.ui.screens.home.HomeScreen
-import com.example.cinemahub.ui.screens.home.HomeViewModel
-import com.example.cinemahub.ui.screens.movie_details.MovieDetailsScreen
-import com.example.cinemahub.ui.screens.movie_details.MovieDetailsViewModel
-import com.example.cinemahub.ui.screens.profile.ProfileScreen
-import com.example.cinemahub.ui.screens.profile.ProfileViewModel
-import com.example.cinemahub.ui.screens.search.SearchFiltersScreen
-import com.example.cinemahub.ui.screens.search.SearchScreen
-import com.example.cinemahub.ui.screens.search.SearchViewModel
+import com.example.cinemahub.ui.screens.user.favorites.FavoritesScreen
+import com.example.cinemahub.ui.screens.user.favorites.FavoritesViewModel
+import com.example.cinemahub.ui.screens.user.history.HistoryScreen
+import com.example.cinemahub.ui.screens.user.history.HistoryViewModel
+import com.example.cinemahub.ui.screens.user.home.HomeScreen
+import com.example.cinemahub.ui.screens.user.home.HomeViewModel
+import com.example.cinemahub.ui.screens.user.movie_details.MovieDetailsScreen
+import com.example.cinemahub.ui.screens.user.movie_details.MovieDetailsViewModel
+import com.example.cinemahub.ui.screens.user.profile.ProfileScreen
+import com.example.cinemahub.ui.screens.user.profile.ProfileViewModel
+import com.example.cinemahub.ui.screens.user.search.SearchFiltersScreen
+import com.example.cinemahub.ui.screens.user.search.SearchScreen
+import com.example.cinemahub.ui.screens.user.search.SearchViewModel
 
 @Composable
 fun MainAppNavigation(

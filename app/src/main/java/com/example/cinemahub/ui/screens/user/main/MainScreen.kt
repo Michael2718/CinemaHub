@@ -1,4 +1,4 @@
-package com.example.cinemahub.ui.screens.main
+package com.example.cinemahub.ui.screens.user.main
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
