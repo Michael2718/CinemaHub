@@ -14,12 +14,15 @@ import androidx.navigation.navigation
 import com.example.cinemahub.navigation.routes.AddMovie
 import com.example.cinemahub.navigation.routes.Movies
 import com.example.cinemahub.navigation.routes.MoviesGraph
+import com.example.cinemahub.navigation.routes.UpdateMovie
 import com.example.cinemahub.navigation.routes.Users
 import com.example.cinemahub.navigation.routes.UsersGraph
 import com.example.cinemahub.ui.screens.admin.movies.AddMovieScreen
 import com.example.cinemahub.ui.screens.admin.movies.AddMovieViewModel
 import com.example.cinemahub.ui.screens.admin.movies.MoviesScreen
 import com.example.cinemahub.ui.screens.admin.movies.MoviesViewModel
+import com.example.cinemahub.ui.screens.admin.movies.UpdateMovieScreen
+import com.example.cinemahub.ui.screens.admin.movies.UpdateMovieViewModel
 import com.example.cinemahub.ui.screens.admin.users.UsersScreen
 import com.example.cinemahub.ui.screens.admin.users.UsersViewModel
 
@@ -62,7 +65,7 @@ fun NavGraphBuilder.moviesGraph(
             MoviesScreen(
                 uiState = uiState,
                 onMovieClick = {
-
+                    navController.navigate(UpdateMovie(it))
                 },
                 onAddMovie = {
                     navController.navigate(AddMovie)
@@ -109,7 +112,26 @@ fun NavGraphBuilder.moviesGraph(
             )
         }
 
-
+        composable<UpdateMovie> {
+            val viewModel: UpdateMovieViewModel = hiltViewModel()
+            val uiState by viewModel.uiState.collectAsState()
+            UpdateMovieScreen(
+                uiState = uiState,
+                onSaveClick = viewModel::save,
+//                updateMovieId = viewModel::updateMovieId,
+                updateTitle = viewModel::updateTitle,
+                updateReleaseDate = viewModel::updateReleaseDate,
+                updateDuration = viewModel::updateDuration,
+                updatePlot = viewModel::updatePlot,
+                updateAdult = viewModel::updateAdult,
+                updatePrice = viewModel::updatePrice,
+                updatePrimaryImageUrl = viewModel::updatePrimaryImageUrl,
+                onRefresh = viewModel::fetchMovie,
+                onBack = {
+                    navController.navigateUp()
+                }
+            )
+        }
     }
 }
 

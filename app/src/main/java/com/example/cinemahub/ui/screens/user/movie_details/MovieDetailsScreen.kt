@@ -162,7 +162,7 @@ fun MovieDetailsContent(
             modifier = Modifier
                 .verticalScroll(rememberScrollState())
         ) {
-            when (uiState.movieRequestStatus) {
+            when (uiState.movieDetailsRequestStatus) {
                 is RequestStatus.Error -> {
                     ErrorScreen(
                         onRefresh = { pullRefreshState.startRefresh() },
@@ -179,7 +179,7 @@ fun MovieDetailsContent(
                 }
 
                 is RequestStatus.Success -> {
-                    val movie = uiState.movieRequestStatus.data
+                    val movie = uiState.movieDetailsRequestStatus.data
                     MovieDetails(
                         movie = movie,
                         onFavoriteClick = onFavoriteClick,

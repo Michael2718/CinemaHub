@@ -97,8 +97,7 @@ fun MoviesScreen(
                             contentDescription = "Add movie"
                         )
                     }
-                },
-                modifier = modifier
+                }
             )
         },
         modifier = modifier

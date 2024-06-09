@@ -1,11 +1,13 @@
 package com.example.cinemahub.ui.screens.admin.movies
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.cinemahub.data.CinemaHubRepository
-import com.example.cinemahub.model.api.movie.AddMovieRequest
-import com.example.cinemahub.network.AddedMovieRequestStatus
+import com.example.cinemahub.model.api.movie.UpdateMovieRequest
+import com.example.cinemahub.network.MovieRequestStatus
 import com.example.cinemahub.network.RequestStatus
+import com.example.cinemahub.network.UpdateMovieRequestStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,48 +15,56 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
-import org.postgresql.util.PGInterval
 import javax.inject.Inject
 
 @HiltViewModel
-class AddMovieViewModel @Inject constructor(
+class UpdateMovieViewModel @Inject constructor(
+    savedStateHandle: SavedStateHandle,
     private val repository: CinemaHubRepository
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(
-        AddMovieUiState()
+        UpdateMovieUiState(
+            movieId = savedStateHandle["movieId"] ?: ""
+        )
     )
 
-    val uiState: StateFlow<AddMovieUiState> = _uiState
+    val uiState: StateFlow<UpdateMovieUiState> = _uiState
 
-    //    init {
-//        fetchMovies()
-//    }
-//
-//    fun fetchMovies() {
-//        viewModelScope.launch(Dispatchers.IO) {
-//            _uiState.update {
-//                it.copy(
-//                    moviesRequestStatus = try {
-//                        RequestStatus.Success(repository.getAllMovies())
-//                    } catch (e: Exception) {
-//                        RequestStatus.Error(e)
-//                    }
-//                )
-//            }
-//        }
-//    }
-//
-//    fun deleteMovie(movieId: String) {
-//        viewModelScope.launch(Dispatchers.IO) {
-//            repository.deleteMovie(movieId)
-//            fetchMovies()
-//        }
-//    }
-    fun updateMovieId(movieId: String) {
+    init {
+        fetchMovie()
+    }
+
+    fun fetchMovie() {
         _uiState.update {
             it.copy(
-                movieId = movieId
+                movieRequestStatus = RequestStatus.Loading()
             )
+        }
+
+        viewModelScope.launch(Dispatchers.IO) {
+            _uiState.update {
+                it.copy(
+                    movieRequestStatus = try {
+                        RequestStatus.Success(
+                            repository.getMovieById(
+                                uiState.value.movieId
+                            )
+                        )
+                    } catch (e: Exception) {
+                        RequestStatus.Error(e)
+                    }
+                )
+            }
+            val status = uiState.value.movieRequestStatus
+            if (status is RequestStatus.Success) {
+                updateTitle(status.data.title)
+                updateReleaseDate(status.data.releaseDate.toString())
+                updateDuration("${status.data.duration.hours}h ${status.data.duration.minutes}m")
+                updatePlot(status.data.plot)
+                updateAdult(status.data.isAdult)
+                updatePrice(status.data.price.`val`.toString())
+                updatePrimaryImageUrl(status.data.primaryImageUrl)
+            }
         }
     }
 
@@ -114,32 +124,38 @@ class AddMovieViewModel @Inject constructor(
         }
     }
 
-    fun clearUiState() {
-        _uiState.update {
-            AddMovieUiState()
-        }
-    }
+//    fun clearUiState() {
+//        _uiState.update {
+//            UpdateMovieUiState()
+//        }
+//    }
 
     fun save() {
         viewModelScope.launch(Dispatchers.IO) {
             _uiState.update {
                 it.copy(
-                    addedMovieRequestStatus = try {
-                        val movie = repository.addMovie(uiState.value.toAddMovieRequest())
-                        RequestStatus.Success(movie)
+                    updateMovieRequestStatus = try {
+                        RequestStatus.Success(
+                            repository.updateMovie(
+                                movieId = uiState.value.movieId,
+                                request = uiState.value.toUpdateMovieRequest()
+                            )
+                        )
                     } catch (e: Exception) {
                         RequestStatus.Error(e)
-                    }
+                    },
                 )
             }
         }
     }
 }
 
-data class AddMovieUiState(
-    val addedMovieRequestStatus: AddedMovieRequestStatus = RequestStatus.Loading(),
+data class UpdateMovieUiState(
+    val updateMovieRequestStatus: UpdateMovieRequestStatus = RequestStatus.Loading(),
+    val movieRequestStatus: MovieRequestStatus = RequestStatus.Loading(),
 
     val movieId: String = "",
+
     val title: String = "",
     val releaseDate: String = "",
     val duration: String = "",
@@ -149,8 +165,7 @@ data class AddMovieUiState(
     val primaryImageUrl: String = ""
 )
 
-fun AddMovieUiState.toAddMovieRequest(): AddMovieRequest = AddMovieRequest(
-    movieId = this.movieId,
+fun UpdateMovieUiState.toUpdateMovieRequest(): UpdateMovieRequest = UpdateMovieRequest(
     title = this.title,
     releaseDate = LocalDate.parse(this.releaseDate),
     duration = parsePGInterval(this.duration), // parsePGInterval(this.duration),
@@ -159,25 +174,3 @@ fun AddMovieUiState.toAddMovieRequest(): AddMovieRequest = AddMovieRequest(
     price = this.price.toDouble(),
     primaryImageUrl = this.primaryImageUrl
 )
-
-fun parsePGInterval(intervalString: String): PGInterval {
-    val pattern1 = Regex("(\\d+)h\\s?(\\d+)m")
-    val pattern2 = Regex("(\\d+)\\s?hours?\\s?(\\d+)\\s?minutes?")
-    var duration: Pair<Int, Int> = 0 to 0
-
-    val match1 = pattern1.find(intervalString)
-    if (match1 != null) {
-        val hours = match1.groupValues[1].toInt()
-        val minutes = match1.groupValues[2].toInt()
-        duration = hours to minutes
-    }
-
-    val match2 = pattern2.find(intervalString)
-    if (match2 != null) {
-        val hours = match2.groupValues[1].toInt()
-        val minutes = match2.groupValues[2].toInt()
-        duration = hours to minutes
-    }
-
-    return PGInterval(0, 0, 0, duration.first, duration.second, 0.0)
-}

@@ -14,6 +14,11 @@ data object Movies
 @Serializable
 data object AddMovie
 
+@Serializable
+data class UpdateMovie(
+    val movieId: String
+)
+
 //@Serializable
 //data object AdminSearchFilters
 

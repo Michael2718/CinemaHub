@@ -61,7 +61,7 @@ fun UsersScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "Movies",
+                        text = "Users",
                         style = MaterialTheme.typography.headlineSmall
                     )
                 },
@@ -75,7 +75,8 @@ fun UsersScreen(
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ExitToApp,
-                            contentDescription = "LogOut"
+                            contentDescription = "LogOut",
+                            tint = MaterialTheme.colorScheme.error
                         )
                     }
                 },

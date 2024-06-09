@@ -45,7 +45,6 @@ data class UpdateMovieRequest(
     val duration: PGInterval,
     val plot: String,
     val isAdult: Boolean,
-    @Serializable(with = PGMoneySerializer::class)
-    val price: PGmoney,
+    val price: Double,
     val primaryImageUrl: String
 )

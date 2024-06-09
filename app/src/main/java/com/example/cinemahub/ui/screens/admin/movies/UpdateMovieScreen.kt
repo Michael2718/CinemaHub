@@ -9,8 +9,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Button
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
@@ -45,12 +45,11 @@ import kotlinx.datetime.toLocalDateTime
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddMovieScreen(
-    uiState: AddMovieUiState,
+fun UpdateMovieScreen(
+    uiState: UpdateMovieUiState,
     onBack: () -> Unit,
-    onClear: () -> Unit,
     onSaveClick: () -> Unit,
-    updateMovieId: (String) -> Unit,
+//    updateMovieId: (String) -> Unit,
     updateTitle: (String) -> Unit,
     updateReleaseDate: (String) -> Unit,
     updateDuration: (String) -> Unit,
@@ -58,6 +57,7 @@ fun AddMovieScreen(
     updateAdult: (Boolean) -> Unit,
     updatePrice: (String) -> Unit,
     updatePrimaryImageUrl: (String) -> Unit,
+    onRefresh: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
@@ -65,7 +65,7 @@ fun AddMovieScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "Add movie",
+                        text = "Edit movie",
                         style = MaterialTheme.typography.headlineSmall
                     )
                 },
@@ -75,11 +75,11 @@ fun AddMovieScreen(
                 ),
                 actions = {
                     IconButton(
-                        onClick = onClear
+                        onClick = onRefresh
                     ) {
                         Icon(
-                            imageVector = Icons.Default.Clear,
-                            contentDescription = "Clear movie fields"
+                            imageVector = Icons.Default.Refresh,
+                            contentDescription = null
                         )
                     }
                 },
@@ -92,10 +92,10 @@ fun AddMovieScreen(
         },
         modifier = modifier
     ) {
-        AddMovieForm(
+        UpdateMovieForm(
             uiState = uiState,
             onSaveClick = onSaveClick,
-            updateMovieId = updateMovieId,
+//            updateMovieId = updateMovieId,
             updateTitle = updateTitle,
             updateReleaseDate = updateReleaseDate,
             updateDuration = updateDuration,
@@ -117,10 +117,10 @@ fun AddMovieScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddMovieForm(
-    uiState: AddMovieUiState,
+fun UpdateMovieForm(
+    uiState: UpdateMovieUiState,
     onSaveClick: () -> Unit,
-    updateMovieId: (String) -> Unit,
+//    updateMovieId: (String) -> Unit,
     updateTitle: (String) -> Unit,
     updateReleaseDate: (String) -> Unit,
     updateDuration: (String) -> Unit,
@@ -137,14 +137,14 @@ fun AddMovieForm(
             .fillMaxWidth()
             .verticalScroll(rememberScrollState())
     ) {
-        CommonTextField(
-            value = uiState.movieId,
-            onValueChange = { updateMovieId(it) },
-            label = { Text("MovieId") },
-            imeAction = ImeAction.Next,
-            shape = RectangleShape,
-            modifier = Modifier.fillMaxWidth(),
-        )
+//        CommonTextField(
+//            value = uiState.movieId,
+//            onValueChange = { updateMovieId(it) },
+//            label = { Text("MovieId") },
+//            imeAction = ImeAction.Next,
+//            shape = RectangleShape,
+//            modifier = Modifier.fillMaxWidth(),
+//        )
         CommonTextField(
             value = uiState.title,
             onValueChange = { updateTitle(it) },
@@ -258,7 +258,7 @@ fun AddMovieForm(
         ) {
             Text("Save", style = MaterialTheme.typography.titleLarge)
         }
-        when (uiState.addedMovieRequestStatus) {
+        when (uiState.updateMovieRequestStatus) {
             is RequestStatus.Error -> Text(
                 "Invalid movie info",
                 color = MaterialTheme.colorScheme.error
@@ -267,7 +267,7 @@ fun AddMovieForm(
             is RequestStatus.Loading -> {}
 
             is RequestStatus.Success -> Text(
-                "Add Successful!",
+                "Update Successful!",
                 color = Color.Green
             )
         }

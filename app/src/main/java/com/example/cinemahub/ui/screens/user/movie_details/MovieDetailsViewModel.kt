@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.cinemahub.PreferenceManagerSingleton
 import com.example.cinemahub.data.CinemaHubRepository
 import com.example.cinemahub.model.api.review.AddReviewRequest
-import com.example.cinemahub.network.MovieRequestStatus
+import com.example.cinemahub.network.MovieDetailsRequestStatus
 import com.example.cinemahub.network.RequestStatus
 import com.example.cinemahub.network.ReviewsRequestStatus
 import com.example.cinemahub.network.UserReviewRequestStatus
@@ -43,7 +43,7 @@ class MovieDetailsViewModel @Inject constructor(
     ) {
         _uiState.update {
             it.copy(
-                movieRequestStatus = RequestStatus.Loading()
+                movieDetailsRequestStatus = RequestStatus.Loading()
             )
         }
 
@@ -51,7 +51,7 @@ class MovieDetailsViewModel @Inject constructor(
             delay(500)
             _uiState.update {
                 it.copy(
-                    movieRequestStatus = try {
+                    movieDetailsRequestStatus = try {
                         RequestStatus.Success(
                             repository.getMovieByUserId(movieId, userId)
                         )
@@ -174,7 +174,7 @@ class MovieDetailsViewModel @Inject constructor(
 data class MovieDetailsUiState(
     val movieId: String = "",
     val userId: Int = PreferenceManagerSingleton.getUserId(),
-    val movieRequestStatus: MovieRequestStatus = RequestStatus.Loading(),
+    val movieDetailsRequestStatus: MovieDetailsRequestStatus = RequestStatus.Loading(),
     val reviewsRequestStatus: ReviewsRequestStatus = RequestStatus.Loading(),
     val userReviewRequestStatus: UserReviewRequestStatus = RequestStatus.Loading(),
 //    val transactionRequestStatus: TransactionRequestStatus = RequestStatus.Loading()
