@@ -20,6 +20,8 @@ import com.example.cinemahub.ui.screens.admin.movies.AddMovieScreen
 import com.example.cinemahub.ui.screens.admin.movies.AddMovieViewModel
 import com.example.cinemahub.ui.screens.admin.movies.MoviesScreen
 import com.example.cinemahub.ui.screens.admin.movies.MoviesViewModel
+import com.example.cinemahub.ui.screens.admin.users.UsersScreen
+import com.example.cinemahub.ui.screens.admin.users.UsersViewModel
 
 @Composable
 fun MainAdminAppNavigation(
@@ -43,7 +45,8 @@ fun MainAdminAppNavigation(
 //            navController = navController
 //        )
         usersGraph(
-            navController = navController
+            navController = navController,
+            onLogOut = onLogOut
         )
     }
 }
@@ -121,11 +124,37 @@ fun NavGraphBuilder.moviesGraph(
 //}
 
 fun NavGraphBuilder.usersGraph(
-    navController: NavHostController
+    navController: NavHostController,
+    onLogOut: () -> Unit
 ) {
     navigation<UsersGraph>(Users) {
         composable<Users> {
-
+            val viewModel: UsersViewModel = hiltViewModel()
+            val uiState by viewModel.uiState.collectAsState()
+            val keyboardController = LocalSoftwareKeyboardController.current
+            UsersScreen(
+                uiState = uiState,
+                onUserClick = {},
+                onRefresh = viewModel::fetchUsers,
+                onDelete = viewModel::deleteMovie,
+                onQueryChange = viewModel::updateQuery,
+                onBack = {
+                    viewModel.setSearching(false)
+                    keyboardController?.hide()
+                },
+                onClear = {
+                    viewModel.updateQuery("")
+                    viewModel.fetchUsers()
+                },
+                onActiveChange = viewModel::setSearching,
+                onSearch = {
+                    viewModel.updateQuery(it)
+                    viewModel.fetchUsers()
+                    viewModel.setSearching(false)
+                    keyboardController?.hide()
+                },
+                onLogOut = onLogOut
+            )
         }
     }
 }

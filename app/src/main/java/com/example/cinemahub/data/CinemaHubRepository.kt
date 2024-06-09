@@ -60,7 +60,7 @@ interface CinemaHubRepository {
     suspend fun getUserById(userId: Int): User
     suspend fun getUserByUsername(username: String): User
     suspend fun updateUser(userId: Int, updateUserRequest: UpdateUserRequest): User
-    suspend fun getAllUsers(): List<User>
+    suspend fun getAllUsers(query: String): List<User>
     suspend fun deleteUser(userId: Int): Boolean
 
     suspend fun signIn(signInRequest: SignInRequest): Token
@@ -206,8 +206,8 @@ class NetworkCinemaHubRepository(
         return cinemaHubApiService.updateUser(userId, updateUserRequest, getHeader())
     }
 
-    override suspend fun getAllUsers(): List<User> {
-        return cinemaHubApiService.getAllUsers(getHeader())
+    override suspend fun getAllUsers(query: String): List<User> {
+        return cinemaHubApiService.getAllUsers(query, getHeader())
     }
 
     override suspend fun deleteUser(userId: Int): Boolean {

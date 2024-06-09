@@ -39,3 +39,5 @@ typealias HistoryRequestStatus = RequestStatus<List<HistoryResponse>>
 
 typealias SearchRequestStatus = RequestStatus<List<MovieSearchResponse>>
 typealias SignUpRequestStatus = RequestStatus<Token>
+
+typealias UsersRequestStatus = RequestStatus<List<User>>

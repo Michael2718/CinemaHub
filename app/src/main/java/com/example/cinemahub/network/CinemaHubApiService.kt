@@ -147,6 +147,7 @@ interface CinemaHubApiService {
 
     @GET("users")
     suspend fun getAllUsers(
+        @Query("query") query: String?,
         @Header("Authorization") authHeader: String
     ): List<User>
 
