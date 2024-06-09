@@ -14,6 +14,9 @@ data object Movies
 @Serializable
 data object AddMovie
 
+@Serializable
+data object AdminSearchFilters
+
 //@Serializable
 //data object ReviewsGraph
 //

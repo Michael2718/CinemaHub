@@ -7,6 +7,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,7 +18,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
@@ -27,6 +30,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -41,13 +45,13 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.cinemahub.R
 import com.example.cinemahub.model.api.movie.Movie
-import com.example.cinemahub.network.MoviesRequestStatus
 import com.example.cinemahub.network.RequestStatus
 import com.example.cinemahub.ui.composables.ErrorScreen
 import com.example.cinemahub.ui.composables.LoadingScreen
@@ -59,9 +63,13 @@ fun MoviesScreen(
     uiState: MoviesUiState,
     onMovieClick: (String) -> Unit,
     onAddMovie: () -> Unit,
-    onSearch: () -> Unit,
     onRefresh: () -> Unit,
     onDelete: (String) -> Unit,
+    onQueryChange: (String) -> Unit,
+    onBack: () -> Unit,
+    onClear: () -> Unit,
+    onActiveChange: (Boolean) -> Unit,
+    onSearch: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val pullRefreshState = rememberPullToRefreshState()
@@ -89,14 +97,6 @@ fun MoviesScreen(
                             contentDescription = "Add movie"
                         )
                     }
-                    IconButton(
-                        onClick = onSearch
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Search,
-                            contentDescription = "Movie search"
-                        )
-                    }
                 },
                 modifier = modifier
             )
@@ -104,18 +104,23 @@ fun MoviesScreen(
         modifier = modifier
     ) {
         MoviesScreenContent(
-            moviesRequestStatus = uiState.moviesRequestStatus,
+            uiState = uiState,
             pullRefreshState = pullRefreshState,
             onMovieClick = onMovieClick,
             context = context,
             onRefresh = onRefresh,
             onDeleteClick = onDelete,
+            onQueryChange = onQueryChange,
+            onSearch = onSearch,
+            onActiveChange = onActiveChange,
+            onBack = onBack,
+            onClear = onClear,
             modifier = Modifier
                 .padding(it)
                 .padding(
-                    start = 16.dp,
+                    start = 8.dp,
                     top = 0.dp,
-                    end = 16.dp,
+                    end = 8.dp,
                     bottom = 0.dp
                 )
         )
@@ -125,12 +130,17 @@ fun MoviesScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MoviesScreenContent(
-    moviesRequestStatus: MoviesRequestStatus,
+    uiState: MoviesUiState,
     pullRefreshState: PullToRefreshState,
     context: Context,
     onMovieClick: (String) -> Unit,
     onDeleteClick: (String) -> Unit,
     onRefresh: () -> Unit,
+    onQueryChange: (String) -> Unit,
+    onBack: () -> Unit,
+    onClear: () -> Unit,
+    onActiveChange: (Boolean) -> Unit,
+    onSearch: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     if (pullRefreshState.isRefreshing) {
@@ -141,62 +151,101 @@ fun MoviesScreenContent(
         }
     }
 
-    Box(
-        modifier = modifier
-            .nestedScroll(pullRefreshState.nestedScrollConnection)
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        LazyColumn(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally
+        SearchBar(
+            query = uiState.query,
+            onQueryChange = onQueryChange,
+            onSearch = onSearch,
+            active = uiState.isSearching,
+            enabled = true,
+            onActiveChange = onActiveChange,
+            placeholder = { Text(text = "Search for movies") },
+            leadingIcon = {
+                if (uiState.isSearching) {
+                    IconButton(onClick = onBack) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(R.string.back)
+                        )
+                    }
+                } else {
+                    Icon(
+                        imageVector = Icons.Filled.Search,
+                        contentDescription = "Search"
+                    )
+                }
+            },
+            trailingIcon = {
+                IconButton(onClick = onClear) {
+                    Icon(
+                        imageVector = Icons.Filled.Clear,
+                        contentDescription = "Clear"
+                    )
+                }
+            }
+        ) {}
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .nestedScroll(pullRefreshState.nestedScrollConnection)
         ) {
-            when (moviesRequestStatus) {
-                is RequestStatus.Error -> {
-                    items(1) {
-                        ErrorScreen(
-                            onRefresh = { pullRefreshState.startRefresh() },
-                            modifier = Modifier
-                                .fillMaxSize()
-                        )
-                    }
-                }
-
-                is RequestStatus.Loading -> {
-                    items(1) {
-                        LoadingScreen(
-                            modifier = Modifier
-                                .fillMaxSize()
-                        )
-                    }
-                }
-
-                is RequestStatus.Success -> {
-                    val movies = moviesRequestStatus.data
-                    if (movies.isEmpty()) {
+            LazyColumn(
+                contentPadding = PaddingValues(vertical = 8.dp),
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                when (uiState.moviesRequestStatus) {
+                    is RequestStatus.Error -> {
                         items(1) {
-                            Text("No movies")
-                        }
-                    } else {
-                        items(items = movies, key = { it.movieId }) { movie ->
-                            AdminMovieListItem(
-                                movie = movie,
-                                context = context,
-                                onDeleteClick = onDeleteClick,
-                                onMovieClick = onMovieClick,
+                            ErrorScreen(
+                                onRefresh = { pullRefreshState.startRefresh() },
                                 modifier = Modifier
-                                    .animateItem(fadeInSpec = null, fadeOutSpec = null)
-                                    .padding(4.dp)
+                                    .fillMaxSize()
                             )
+                        }
+                    }
+
+                    is RequestStatus.Loading -> {
+                        items(1) {
+                            LoadingScreen(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                            )
+                        }
+                    }
+
+                    is RequestStatus.Success -> {
+                        val movies = uiState.moviesRequestStatus.data
+                        if (movies.isEmpty()) {
+                            items(1) {
+                                Text("No movies")
+                            }
+                        } else {
+                            items(items = movies, key = { it.movieId }) { movie ->
+                                AdminMovieListItem(
+                                    movie = movie,
+                                    context = context,
+                                    onDeleteClick = onDeleteClick,
+                                    onMovieClick = onMovieClick,
+                                    modifier = Modifier
+                                        .animateItem(fadeInSpec = null, fadeOutSpec = null)
+                                        .padding(4.dp)
+                                )
+                            }
                         }
                     }
                 }
             }
-        }
 
-        PullToRefreshContainer(
-            modifier = Modifier
-                .align(Alignment.TopCenter),
-            state = pullRefreshState
-        )
+            PullToRefreshContainer(
+                modifier = Modifier
+                    .align(Alignment.TopCenter),
+                state = pullRefreshState
+            )
+        }
     }
 }
 

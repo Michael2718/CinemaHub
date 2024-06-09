@@ -45,7 +45,7 @@ interface CinemaHubRepository {
         userId: Int?
     ): List<MovieSearchResponse>
 
-    suspend fun getAllMovies(): List<Movie>
+    suspend fun getAllMovies(query: String?): List<Movie>
     suspend fun addMovie(request: AddMovieRequest): Movie
     suspend fun deleteMovie(movieId: String): Boolean
     suspend fun updateMovie(movieId: String, request: UpdateMovieRequest): Movie
@@ -97,8 +97,8 @@ class NetworkCinemaHubRepository(
 //    private fun getToken(): String = authHeader.value.token
     private fun getHeader(): String = "Bearer ${authHeader.value.token}"
 
-    override suspend fun getAllMovies(): List<Movie> {
-        return cinemaHubApiService.getAllMovies(getHeader())
+    override suspend fun getAllMovies(query: String?): List<Movie> {
+        return cinemaHubApiService.getAllMovies(query, getHeader())
     }
 
     override suspend fun addMovie(request: AddMovieRequest): Movie {

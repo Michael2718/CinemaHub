@@ -36,7 +36,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.cinemahub.network.RequestStatus
 import com.example.cinemahub.ui.composables.CommonTextField
@@ -51,7 +50,6 @@ fun AddMovieScreen(
     onBack: () -> Unit,
     onClear: () -> Unit,
     onSaveClick: () -> Unit,
-//    onRefresh: () -> Unit,
     updateMovieId: (String) -> Unit,
     updateTitle: (String) -> Unit,
     updateReleaseDate: (String) -> Unit,
@@ -62,15 +60,13 @@ fun AddMovieScreen(
     updatePrimaryImageUrl: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-//    val pullRefreshState = rememberPullToRefreshState()
-//    val context = LocalContext.current
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
                     Text(
-                        text = "Movies",
+                        text = "Add movie",
                         style = MaterialTheme.typography.headlineSmall
                     )
                 },
@@ -118,93 +114,8 @@ fun AddMovieScreen(
                     bottom = 0.dp
                 )
         )
-//        AddMovieScreenContent(
-//            uiState = uiState,
-//            onSaveClick = onSaveClick,
-////            onRefresh = onRefresh,
-//            updateMovieId = updateMovieId,
-//            updateTitle = updateTitle,
-//            updateReleaseDate = updateReleaseDate,
-//            updateDuration = updateDuration,
-//            updatePlot = updatePlot,
-//            updateAdult = updateAdult,
-//            updatePrice = updatePrice,
-//            updatePrimaryImageUrl = updatePrimaryImageUrl,
-////            pullRefreshState = pullRefreshState,
-//            modifier = Modifier
-//                .padding(it)
-//                .padding(
-//                    start = 16.dp,
-//                    top = 0.dp,
-//                    end = 16.dp,
-//                    bottom = 0.dp
-//                )
-//        )
     }
 }
-
-//@OptIn(ExperimentalMaterial3Api::class)
-//@Composable
-//fun AddMovieScreenContent(
-//    uiState: AddMovieUiState,
-////    pullRefreshState: PullToRefreshState,
-//    onSaveClick: () -> Unit,
-////    onRefresh: () -> Unit,
-//    updateMovieId: (String) -> Unit,
-//    updateTitle: (String) -> Unit,
-//    updateReleaseDate: (String) -> Unit,
-//    updateDuration: (String) -> Unit,
-//    updatePlot: (String) -> Unit,
-//    updateAdult: (Boolean) -> Unit,
-//    updatePrice: (String) -> Unit,
-//    updatePrimaryImageUrl: (String) -> Unit,
-//    modifier: Modifier = Modifier
-//) {
-////    if (pullRefreshState.isRefreshing) {
-////        LaunchedEffect(Unit) {
-////            delay(1500)
-////            onRefresh()
-////            pullRefreshState.endRefresh()
-////        }
-////    }
-//
-//    AddMovieForm(
-//        uiState = uiState,
-//        onSaveClick = onSaveClick,
-//        updateMovieId = updateMovieId,
-//        updateTitle = updateTitle,
-//        updateReleaseDate = updateReleaseDate,
-//        updateDuration = updateDuration,
-//        updatePlot = updatePlot,
-//        updateAdult = updateAdult,
-//        updatePrice = updatePrice,
-//        updatePrimaryImageUrl = updatePrimaryImageUrl
-//    )
-//
-////    Box(
-////        modifier = modifier
-////            .nestedScroll(pullRefreshState.nestedScrollConnection)
-////    ) {
-////        AddMovieForm(
-////            uiState = uiState,
-////            onSaveClick = onSaveClick,
-////            updateMovieId = updateMovieId,
-////            updateTitle = updateTitle,
-////            updateReleaseDate = updateReleaseDate,
-////            updateDuration = updateDuration,
-////            updatePlot = updatePlot,
-////            updateAdult = updateAdult,
-////            updatePrice = updatePrice,
-////            updatePrimaryImageUrl = updatePrimaryImageUrl
-////        )
-////
-////        PullToRefreshContainer(
-////            modifier = Modifier
-////                .align(Alignment.TopCenter),
-////            state = pullRefreshState
-////        )
-////    }
-//}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -302,7 +213,7 @@ fun AddMovieForm(
         }
         CommonTextField(
             value = uiState.duration,
-            onValueChange = { updateDuration(it) }, // TODO
+            onValueChange = { updateDuration(it) },
             label = { Text("Duration") },
             imeAction = ImeAction.Next,
             shape = RectangleShape,
@@ -363,10 +274,4 @@ fun AddMovieForm(
             )
         }
     }
-}
-
-@Preview
-@Composable
-private fun AddMovieScreenPreview() {
-
 }

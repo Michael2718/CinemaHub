@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
@@ -54,6 +55,7 @@ fun NavGraphBuilder.moviesGraph(
         composable<Movies> {
             val viewModel: MoviesViewModel = hiltViewModel()
             val uiState by viewModel.uiState.collectAsState()
+            val keyboardController = LocalSoftwareKeyboardController.current
             MoviesScreen(
                 uiState = uiState,
                 onMovieClick = {
@@ -62,14 +64,23 @@ fun NavGraphBuilder.moviesGraph(
                 onAddMovie = {
                     navController.navigate(AddMovie)
                 },
+                onRefresh = viewModel::fetchMovies,
+                onDelete = viewModel::deleteMovie,
+                onQueryChange = viewModel::updateQuery,
                 onSearch = {
-
-                },
-                onRefresh = {
+                    viewModel.updateQuery(it)
                     viewModel.fetchMovies()
+                    viewModel.setSearching(false)
+                    keyboardController?.hide()
                 },
-                onDelete = { movieId ->
-                    viewModel.deleteMovie(movieId)
+                onActiveChange = viewModel::setSearching,
+                onBack = {
+                    viewModel.setSearching(false)
+                    keyboardController?.hide()
+                },
+                onClear = {
+                    viewModel.updateQuery("")
+                    viewModel.fetchMovies()
                 },
             )
         }
@@ -94,6 +105,8 @@ fun NavGraphBuilder.moviesGraph(
                 onClear = viewModel::clearUiState
             )
         }
+
+
     }
 }
 

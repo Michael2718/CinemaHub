@@ -44,6 +44,7 @@ interface CinemaHubApiService {
 
     @GET("movies")
     suspend fun getAllMovies(
+        @Query("query") query: String?,
         @Header("Authorization") authHeader: String
     ): List<Movie>
 
