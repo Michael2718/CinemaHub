@@ -1,6 +1,8 @@
 package com.example.cinemahub.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
@@ -8,10 +10,13 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import com.example.cinemahub.navigation.routes.AddMovie
 import com.example.cinemahub.navigation.routes.Movies
 import com.example.cinemahub.navigation.routes.MoviesGraph
 import com.example.cinemahub.navigation.routes.Users
 import com.example.cinemahub.navigation.routes.UsersGraph
+import com.example.cinemahub.ui.screens.admin.movies.AddMovieScreen
+import com.example.cinemahub.ui.screens.admin.movies.AddMovieViewModel
 import com.example.cinemahub.ui.screens.admin.movies.MoviesScreen
 import com.example.cinemahub.ui.screens.admin.movies.MoviesViewModel
 
@@ -48,17 +53,45 @@ fun NavGraphBuilder.moviesGraph(
     navigation<MoviesGraph>(Movies) {
         composable<Movies> {
             val viewModel: MoviesViewModel = hiltViewModel()
+            val uiState by viewModel.uiState.collectAsState()
             MoviesScreen(
-                viewModel = viewModel,
+                uiState = uiState,
                 onMovieClick = {
 
                 },
-                onAddMovieClick = {
+                onAddMovie = {
+                    navController.navigate(AddMovie)
+                },
+                onSearch = {
 
                 },
-                onSearchClick = {
+                onRefresh = {
+                    viewModel.fetchMovies()
+                },
+                onDelete = { movieId ->
+                    viewModel.deleteMovie(movieId)
+                },
+            )
+        }
 
-                }
+        composable<AddMovie> {
+            val viewModel: AddMovieViewModel = hiltViewModel()
+            val uiState by viewModel.uiState.collectAsState()
+            AddMovieScreen(
+                uiState = uiState,
+                onSaveClick = viewModel::save,
+                updateMovieId = viewModel::updateMovieId,
+                updateTitle = viewModel::updateTitle,
+                updateReleaseDate = viewModel::updateReleaseDate,
+                updateDuration = viewModel::updateDuration,
+                updatePlot = viewModel::updatePlot,
+                updateAdult = viewModel::updateAdult,
+                updatePrice = viewModel::updatePrice,
+                updatePrimaryImageUrl = viewModel::updatePrimaryImageUrl,
+                onBack = {
+                    navController.navigateUp()
+                },
+                onClear = viewModel::clearUiState
             )
         }
     }

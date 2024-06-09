@@ -36,6 +36,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -394,28 +395,33 @@ fun CommonTextField(
     onValueChange: (String) -> Unit,
     label: @Composable (() -> Unit),
     imeAction: ImeAction,
-    leadingIcon: ImageVector,
     modifier: Modifier = Modifier,
+    leadingIcon: ImageVector? = null,
     isValid: Boolean = true,
     errorMessage: String = "",
     isEnabled: Boolean = true,
     onIconClick: () -> Unit = {},
-    visualTransformation: VisualTransformation = VisualTransformation.None
+    visualTransformation: VisualTransformation = VisualTransformation.None,
+    shape: Shape = CircleShape
 ) {
     OutlinedTextField(
         value = value,
         label = label,
         onValueChange = onValueChange,
-        shape = CircleShape,
+        shape = shape,
         singleLine = true,
-        leadingIcon = {
-            Icon(
-                imageVector = leadingIcon,
-                contentDescription = null,
-                modifier = Modifier
-                    .padding(start = 4.dp)
-                    .clickable { onIconClick() }
-            )
+        leadingIcon = if (leadingIcon == null) {
+            null
+        } else {
+            {
+                Icon(
+                    imageVector = leadingIcon,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .padding(start = 4.dp)
+                        .clickable { onIconClick() }
+                )
+            }
         },
         keyboardOptions = KeyboardOptions(
             imeAction = imeAction
@@ -446,13 +452,14 @@ fun PasswordTextField(
     imeAction: ImeAction,
     modifier: Modifier = Modifier,
     isValid: Boolean = true,
-    errorMessage: String = ""
+    errorMessage: String = "",
+    shape: Shape = CircleShape
 ) {
     OutlinedTextField(
         value = value,
         label = label,
         onValueChange = onValueChange,
-        shape = CircleShape,
+        shape = shape,
         singleLine = true,
         leadingIcon = {
             Icon(

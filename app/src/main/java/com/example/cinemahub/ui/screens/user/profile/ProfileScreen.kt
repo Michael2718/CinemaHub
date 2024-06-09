@@ -206,17 +206,6 @@ fun ProfileForm(
             )
         }
 
-//        val userInfoItems = remember {
-//            listOf(
-//                UserInfoField("First name", user.firstName, true, Icons.Default.Face),
-//                UserInfoField("Last name", user.lastName, true, Icons.Default.Face),
-//                UserInfoField("Username", user.username, true, Icons.Default.AccountCircle),
-//                UserInfoField("Email", user.email, true, Icons.Default.Email),
-//                UserInfoField("Phone number", user.phoneNumber, false, Icons.Default.Phone),
-//                UserInfoField("Birth date", user.birthDate.toString(), false, Icons.Default.DateRange)
-//            )
-//        }
-
         Column(
             horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.spacedBy(12.dp)

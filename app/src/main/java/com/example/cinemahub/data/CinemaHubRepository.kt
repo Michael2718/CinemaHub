@@ -4,6 +4,7 @@ import com.example.cinemahub.PreferenceManagerSingleton
 import com.example.cinemahub.model.api.favorite.FavoriteRequest
 import com.example.cinemahub.model.api.favorite.FavoriteResponse
 import com.example.cinemahub.model.api.history.HistoryResponse
+import com.example.cinemahub.model.api.movie.AddMovieRequest
 import com.example.cinemahub.model.api.movie.Movie
 import com.example.cinemahub.model.api.movie.MovieDetailsResponse
 import com.example.cinemahub.model.api.movie.MovieSearchResponse
@@ -45,7 +46,7 @@ interface CinemaHubRepository {
     ): List<MovieSearchResponse>
 
     suspend fun getAllMovies(): List<Movie>
-    suspend fun addMovie(movie: Movie): Boolean
+    suspend fun addMovie(request: AddMovieRequest): Movie
     suspend fun deleteMovie(movieId: String): Boolean
     suspend fun updateMovie(movieId: String, request: UpdateMovieRequest): Movie
 
@@ -100,13 +101,8 @@ class NetworkCinemaHubRepository(
         return cinemaHubApiService.getAllMovies(getHeader())
     }
 
-    override suspend fun addMovie(movie: Movie): Boolean {
-        return try {
-            cinemaHubApiService.addMovie(movie, getHeader())
-            true
-        } catch (e: Exception) {
-            false
-        }
+    override suspend fun addMovie(request: AddMovieRequest): Movie {
+        return cinemaHubApiService.addMovie(request, getHeader())
     }
 
     override suspend fun deleteMovie(movieId: String): Boolean {

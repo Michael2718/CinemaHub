@@ -109,8 +109,7 @@ fun SignUpContent(
         SignUpForm(
             viewModel = viewModel,
             uiState = uiState,
-            onSignUpClick = onSignUpClick,
-            modifier = Modifier
+            onSignUpClick = onSignUpClick
         )
     }
 }
@@ -242,8 +241,7 @@ fun SignUpForm(
                 color = MaterialTheme.colorScheme.error
             )
 
-            is RequestStatus.Loading -> { /* Show a loading indicator here if needed */
-            }
+            is RequestStatus.Loading -> {}
 
             is RequestStatus.Success -> Text(
                 "Sign up Successful!",

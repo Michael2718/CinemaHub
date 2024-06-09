@@ -3,6 +3,7 @@ package com.example.cinemahub.network
 import com.example.cinemahub.model.api.favorite.FavoriteRequest
 import com.example.cinemahub.model.api.favorite.FavoriteResponse
 import com.example.cinemahub.model.api.history.HistoryResponse
+import com.example.cinemahub.model.api.movie.AddMovieRequest
 import com.example.cinemahub.model.api.movie.Movie
 import com.example.cinemahub.model.api.movie.MovieDetailsResponse
 import com.example.cinemahub.model.api.movie.MovieSearchResponse
@@ -48,9 +49,9 @@ interface CinemaHubApiService {
 
     @POST("movies")
     suspend fun addMovie(
-        @Body movie: Movie,
+        @Body request: AddMovieRequest,
         @Header("Authorization") authHeader: String
-    )
+    ): Movie
 
     @DELETE("movies/{movieId}")
     suspend fun deleteMovie(

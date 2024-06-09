@@ -25,6 +25,19 @@ data class Movie(
 )
 
 @Serializable
+data class AddMovieRequest(
+    val movieId: String,
+    val title: String,
+    val releaseDate: LocalDate,
+    @Serializable(with = PGIntervalSerializer::class)
+    val duration: PGInterval,
+    val plot: String,
+    val isAdult: Boolean,
+    val price: Double,
+    val primaryImageUrl: String
+)
+
+@Serializable
 data class UpdateMovieRequest(
     val title: String,
     val releaseDate: LocalDate,

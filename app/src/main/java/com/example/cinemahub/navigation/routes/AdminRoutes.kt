@@ -11,6 +11,9 @@ data object MoviesGraph
 @Serializable
 data object Movies
 
+@Serializable
+data object AddMovie
+
 //@Serializable
 //data object ReviewsGraph
 //

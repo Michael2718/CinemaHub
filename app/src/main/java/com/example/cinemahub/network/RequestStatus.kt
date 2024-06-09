@@ -20,6 +20,7 @@ sealed interface RequestStatus<T> {
 }
 
 typealias MoviesRequestStatus = RequestStatus<List<Movie>>
+typealias AddedMovieRequestStatus = RequestStatus<Movie>
 typealias GenresMoviesRequestStatus = RequestStatus<Map<String, List<Movie>>?>
 typealias MovieRequestStatus = RequestStatus<MovieDetailsResponse>
 

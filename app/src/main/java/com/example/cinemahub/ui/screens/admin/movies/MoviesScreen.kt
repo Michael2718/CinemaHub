@@ -35,8 +35,6 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshState
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -58,13 +56,14 @@ import kotlinx.coroutines.delay
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MoviesScreen(
-    viewModel: MoviesViewModel,
+    uiState: MoviesUiState,
     onMovieClick: (String) -> Unit,
-    onAddMovieClick: () -> Unit,
-    onSearchClick: () -> Unit,
+    onAddMovie: () -> Unit,
+    onSearch: () -> Unit,
+    onRefresh: () -> Unit,
+    onDelete: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val uiState by viewModel.uiState.collectAsState()
     val pullRefreshState = rememberPullToRefreshState()
     val context = LocalContext.current
 
@@ -83,7 +82,7 @@ fun MoviesScreen(
                 ),
                 actions = {
                     IconButton(
-                        onClick = onAddMovieClick
+                        onClick = onAddMovie
                     ) {
                         Icon(
                             imageVector = Icons.Default.Add,
@@ -91,7 +90,7 @@ fun MoviesScreen(
                         )
                     }
                     IconButton(
-                        onClick = onSearchClick
+                        onClick = onSearch
                     ) {
                         Icon(
                             imageVector = Icons.Default.Search,
@@ -109,12 +108,8 @@ fun MoviesScreen(
             pullRefreshState = pullRefreshState,
             onMovieClick = onMovieClick,
             context = context,
-            onRefresh = {
-                viewModel.fetchMovies()
-            },
-            onDeleteClick = { movieId ->
-                viewModel.deleteMovie(movieId)
-            },
+            onRefresh = onRefresh,
+            onDeleteClick = onDelete,
             modifier = Modifier
                 .padding(it)
                 .padding(
@@ -133,7 +128,6 @@ fun MoviesScreenContent(
     moviesRequestStatus: MoviesRequestStatus,
     pullRefreshState: PullToRefreshState,
     context: Context,
-//    onAddMovieClick: () -> Unit,
     onMovieClick: (String) -> Unit,
     onDeleteClick: (String) -> Unit,
     onRefresh: () -> Unit,
@@ -155,17 +149,6 @@ fun MoviesScreenContent(
             modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-//            items(1) {
-//                Button(
-//                    onClick = onAddMovieClick
-//                ) {
-//                    Icon(
-//                        imageVector = Icons.Default.Add,
-//                        contentDescription = null
-//                    )
-//                    Text("Add Movie")
-//                }
-//            }
             when (moviesRequestStatus) {
                 is RequestStatus.Error -> {
                     items(1) {
@@ -220,7 +203,6 @@ fun MoviesScreenContent(
 @Composable
 private fun AdminMovieListItem(
     movie: Movie,
-//    supportingText: String,
     context: Context,
     onDeleteClick: (String) -> Unit,
     onMovieClick: (String) -> Unit,
@@ -306,13 +288,6 @@ private fun AdminMovieListItem(
                         overflow = TextOverflow.Ellipsis
                     )
                 }
-//                Text(
-//                    text = supportingText,
-//                    style = MaterialTheme.typography.labelLarge,
-//                    color = MaterialTheme.colorScheme.outline,
-//                    maxLines = 1,
-//                    overflow = TextOverflow.Ellipsis
-//                )
             }
             IconButton(
                 onClick = {
